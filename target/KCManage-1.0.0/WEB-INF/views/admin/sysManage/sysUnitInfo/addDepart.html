@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>部门单位</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/demo/demo.css">
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../resources/admin/sysManage/sysUnitInfo.js"></script>
+</head>
+<body style="text-align: center">
+	<div class="easyui-panel" title="部门信息添加" style="width:400px;text-align: center">
+		<div style="padding:50px 60px 20px 60px">
+	    <form id="form1" method="post" >
+	    <input type="hidden" value="depart" name="type">
+	     <input type="hidden" value="${parentDepartId}" name="parentDepartId">
+	     
+	     <input type="hidden" value="${unitId}" name="unitId">
+	     <input type="hidden" value="${unitName}" name="unitName">
+	     
+	    	<table cellpadding="5">
+	    		    		<tr>
+	    		<td>单位名称:</td>
+	    			<td style="text-align:left">${unitName}</td>
+	    		</tr>
+	    		<tr>
+	    			<td>部门名称:</td>
+	    			<td><input class="easyui-textbox" type="text" name="departName" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>备注:</td>
+	    			<td><input class="easyui-textbox" type="text" name="departDesc" data-options="required:true"></input></td>
+	    		</tr>
+	    		
+	    		<tr>
+	    			<td>是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="status">
+	    					<option value="Y">启用</option>
+	    					<option value="N">禁用</option>
+	    				</select>
+	    			</td>
+	    		</tr>
+	    	</table>
+	    </form>
+	    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+	    </div>
+	    </div>
+	</div>
+	<script>
+	function submitForm(){
+        
+		$.ajax({
+            cache: true,
+            type: "POST",
+            url:"../SysDepartInfo/saveAddDepart.do",
+            data:$('#form1').serialize(),// 你的formid
+            async: false,
+            error: function(request) {
+                alert("Connection error");
+            },
+            success: function(data) {
+              
+               
+               if(JSON.parse(data).code=="000"){
+            	   alert("部门信息添加成功 ！");
+            	   window.close();
+            	   window.opener.document.getElementsByName("right")[0].src="../SysDepartInfo/queryListIndex.do";
+               }
+            }
+        });
+	}
+	
+		function clearForm(){
+			$('#ff').form('clear');
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <script src="../resources/weixin/js/jquery.min.js"></script>
+    <meta http-equiv=”Expires” CONTENT=”0″>
+    <meta http-equiv=”Cache-Control” CONTENT=”no-cache”>
+    <meta http-equiv=”Pragma” CONTENT=”no-cache”>
+    <meta name="Author" content="npc-guangming">
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <link rel="stylesheet" type="text/css" href="../resources/weixin/styles/shopCarts.css">
+   	<script type="text/javascript"src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="../resources/weixin/js/weui.min.js"></script>
+    <title>出库</title>
+    <style type="text/css">
+   		body{
+   			font-family: 微软雅黑;
+   		}
+   		.reback{
+   			position:absolute;
+   			top:5px;
+   			left:15px;
+   			width: 25px;
+   			heigth:25px;
+   		}
+   		#scanQRCode1{
+   			position:absolute;
+   			top:5px;
+   			right:15px;
+   			width: 25px;
+   			heigth:25px;
+   		}
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <label id="scanQRCode1" ><img src="../resources/images/icon_sao.png" style="width: 25px;height: 25px;"></label><span style="font-size: 15px"><!-- 编辑 --></span>
+        <label class="reback"><a href="../weixin/findlist.html"><img src="../resources/images/icon_back.png" style="width: 25px;height: 25px;"></a></label>
+    </div>
+    <div id="content">
+    </div>
+    <div id="footer">
+        <label><span class="weui-btn weui-btn_mini weui-btn_primary" onclick="ckOperation()">出库</span></label>
+    </div>
+    <script>
+    window.shareType = "2";
+    if(GetQueryString("orderStatus")=="N"){
+  	  alert("此单正在审核，不可以出库！");
+    }
+    var xx = sessionStorage.panDuan;
+    if(xx=="1"){
+    	sessionStorage.clear();
+    }
+   function ckOperation(){
+	   var detailid = document.getElementsByClassName('detailid');
+	   var orderstatus=$("#needstatus")[0].value;
+		if(detailid.length=="0"){
+    		alert("当前订单下没有任何物资!不可出库");
+    		return;
+    	}else if(orderstatus=="N"){
+    		alert("订单正在审核中！不可出库");
+    		return;
+    	}
+		var a=0;
+    	for(var j=0;j<detailid.length;j++){
+    		a+=detailid[j].value;
+    		//a+=realNum[j].value;
+	 		}
+    	if(a==0){
+    		alert("至少有一条物资才可以出库！");
+    		return;
+    	}else{
+    	sessionStorage.productObj ="[]";
+    	var receiptNo = $("#rkOrderNo").text();
+    	var stockNo = document.getElementsByClassName('stockNo');
+    	var stockName = document.getElementsByClassName('stockName');
+    	var standard= document.getElementsByClassName('standard');
+    	var dModel = document.getElementsByClassName('dModel');
+    	var unit = document.getElementsByClassName('unit');
+    	var receivableNum = document.getElementsByClassName('receivableNum');
+    	var realNum = document.getElementsByClassName('count');
+    	var price = document.getElementsByClassName('pricedate');
+    	var amount = document.getElementsByClassName('amount');
+    	var storageDate= document.getElementsByClassName('storageDate');
+    	var isGifts = document.getElementsByClassName('isGifts');
+    	var remark = document.getElementsByClassName('remark');
+    	var remain = document.getElementsByClassName('realNum');
+    	var stockNo1=new Array();
+    	var stockName1=new Array();
+    	var standard1=new Array();
+    	var dModel1=new Array();
+    	var unit1=new Array();
+    	var receivableNum1=new Array();
+    	var realNum1=new Array();
+    	var price1=new Array();
+    	var amount1=new Array();
+    	var storageDate1=new Array();
+    	var isGifts1=new Array();
+    	var remark1=new Array();
+    	var totalcount=0;
+    	for(var j=0;j<stockNo.length;j++){
+    		stockNo1.push(stockNo[j].value);
+    		stockName1.push(stockName[j].value);
+    		standard1.push(standard[j].value);
+    		dModel1.push(dModel[j].value);
+    		unit1.push(unit[j].value);
+    		receivableNum1.push(receivableNum[j].value);
+    		realNum1.push(realNum[j].value);
+    		totalcount+=realNum[j].value;
+    		price1.push(price[j].value);
+    		amount1.push(amount[j].value);
+    		storageDate1.push(storageDate[j].value);
+    		isGifts1.push(isGifts[j].value);
+    		remark1.push(remark[j].value);
+    	}
+    	if(totalcount=="0"){
+    		alert("请至少出库一件物资！");
+    	}else{
+    	var rkid=$("#rkid")[0].value;
+	   var url="../CkAdmin/ckOperation.do";
+	   var parm={
+			rkId:GetQueryString("rkId"),
+			realNum:realNum1,
+			stockNo:stockNo1,
+			stockName:stockName1,
+			standard:standard1,
+			dModel:dModel1,
+			unit:unit1,
+			receivableNum:receivableNum1,
+			price:price1,
+			amount:amount1,
+			storageDate:storageDate1,
+			isGifts:isGifts1,
+			remark:remark1,
+			remain:remain,
+			receiptNo:receiptNo
+	   };
+    	$.ajax({
+    	    url : url,
+    	    data : parm,	
+    	    type : "POST",
+    	    traditional:true,
+    	    success:function(req){
+    	    	if(req.code=="000"){
+    	    		alert("信息提交成功！请等待审核");
+    	    		window.location="../weixin/outwarehouselist.html";
+    	    	}else{
+    	    		alert("网络连接失败！");
+    	    	}
+    	     },
+    	    error:function(){
+    	    	alert("网络连接失败");
+    	    }
+    	});
+    	}
+    	}
+    };
+    addlist();
+      function GetQueryString(name)
+      {
+           var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+           var r = window.location.search.substr(1).match(reg);
+           if(r!=null)return  unescape(r[2]); return null;
+      }
+        function addlist() {
+        	var url="../RkAdmin/queryRkInfoDetailForwx.do?rkId="+GetQueryString("rkId");
+			$.ajax({
+			    url:url,
+			 	dataType: "json", 
+			 	contentType:'application/x-www-form-urlencoded; charset=UTF-8', 
+			    success:function(result){
+			    	//判断session 是否有值，有值则表示通扫一扫 扫过了
+			    	 if(sessionStorage.productObj!=null && sessionStorage.productObj!=""){
+				      		var array = sessionStorage.productObj;
+				      		var json = JSON.parse(array);
+				        	for (var i = 0; i < result[1].list.length; i++) {
+				        		var f =false;
+					      		 for (var j = 0; j < json.length; j++) {
+					      			var productJson = JSON.parse(json[j]);
+					      			if(productJson.productObj.stockNo==result[1].list[i].stockNo){
+					      				result[1].list[i].pageCount=productJson.productObj.pageCount;
+					      				f=true;
+					      			}
+					      			if(j==json.length-1 && !f){
+					      				result[1].list[i].pageCount =result[1].list[i].realNum;
+					      			}
+								}
+							}
+				        	var arrayP = new Array();
+				        	for (var j = 0; j < json.length; j++) {
+			        			var productJson = JSON.parse(json[j]);
+				        		var f =false;
+					      		 for (var i = 0; i < result[1].list.length; i++) {
+					      			
+					      			if(productJson.productObj.stockNo==result[1].list[i].stockNo){
+					      				f=true;
+					      			}
+					      			if(i==result[1].list.length-1 && !f){
+					      				arrayP.push(productJson.productObj);
+					      			}
+								}
+							}
+				        	if(arrayP.length>0){
+				        		for (var i = 0; i < arrayP.length; i++) {
+				        			result[1].list.push(arrayP[i]);
+								}
+				        	}
+				      	 }
+			        var listHtml="";         
+			         for (var i = 1; i < result.length; i++) {
+			        	 if(i!=result.length-1){
+				              listHtml+="<ul id=litem"+(i-1)+"><div class='itemName'><label>"+result[i].name+"</label></div>";
+			        	 }
+			              for(var k = 0; k < result[i].list1.length; k++){
+			            	  if(result[i].list1[k].orderStatus=="Y"){
+			            		  listHtml+=" <li style='height: 200px;background: white;position: relative;border-bottom: 1px solid #f2f2f2;' id=litem"+(i-1)+"-"+k+"><div class='itemMsg'><label class='name1'>&nbsp;&nbsp;"+"入库单详情"+"</label><label class='dingdanNo'>入库单编号:<b id='rkOrderNo'>"+result[i].list1[k].receiptNo+"</b></label><input type='hidden' id='needstatus' value='"+result[i].list1[k].orderStatus+"'><label class='partment'>采购部门:&nbsp;&nbsp;"+result[i].list1[k].cgTeam+"</label><label class='person'>&nbsp;&nbsp;&nbsp;采购人:&nbsp;&nbsp;"+result[i].list1[k].purchasePerson+"</label><label class='support'>&nbsp;&nbsp;&nbsp;供应商:&nbsp;&nbsp;"+result[i].list1[k].supplyShop+"</label></label><label class='times'>入库时间:&nbsp;&nbsp;"+result[i].list1[k].createTime+"</label><label id='orderstatus'>出库状态:&nbsp;&nbsp;可出库</label><input type='hidden' id='rkid' value='"+result[i].list1[k].rkId+"'></div></li>" 
+			            	  }else{
+			            		  listHtml+=" <li style='height: 200px;background: white;position: relative;border-bottom: 1px solid #f2f2f2;' id=litem"+(i-1)+"-"+k+"><div class='itemMsg'><label class='name1'>&nbsp;&nbsp;"+"入库单详情"+"</label><label class='dingdanNo'>入库单编号:<b>&nbsp;&nbsp;"+result[i].list1[k].receiptNo+"</b></label><input type='hidden' id='needstatus' value='"+result[i].list1[k].orderStatus+"'><label class='partment'>采购部门:&nbsp;&nbsp;"+result[i].list1[k].cgTeam+"</label><label class='person'>&nbsp;&nbsp;&nbsp;采购人:&nbsp;&nbsp;"+result[i].list1[k].purchasePerson+"</label><label class='support'>&nbsp;&nbsp;&nbsp;供应商:&nbsp;&nbsp;"+result[i].list1[k].supplyShop+"</label></label><label class='times'>入库时间:&nbsp;&nbsp;"+result[i].list1[k].createTime+"</label><label id='orderstatus'>出库状态:&nbsp;&nbsp;正在审核</label><input type='hidden' id='rkid' value='"+result[i].list1[k].rkId+"'></div></li>"
+			            	  }
+			    			}
+			              for (var j = 0; j < result[i].list.length; j++) {
+			            	  var num = (result[i].list[j].price)*(result[i].list[j].realNum);
+			            	  num =num.toFixed(2);
+			            	  listHtml+="<input type='hidden' class='stockNo' value='"+result[i].list[j].stockNo+"'><input type='hidden' class='stockName' value='"+result[i].list[j].stockName+"'><input type='hidden' class='standard' value='"+result[i].list[j].standard+"'><input type='hidden' class='dModel' value='"+result[i].list[j].DModel+"'><input type='hidden' class='unit' value='"+result[i].list[j].unit+"'><input type='hidden' class='receivableNum' value='"+result[i].list[j].receivableNum+"'><input type='hidden' class='realNum' value='"+result[i].list[j].realNum+"'><input type='hidden' id='remain' value='"+result[i].list[j].realNum+"'><input type='hidden' class='pricedate' value='"+result[i].list[j].price+"'><input type='hidden' class='amount' value='"+result[i].list[j].amount+"'><input type='hidden' class='storageDate' value='"+result[i].list[j].storageDate+"'><input type='hidden' class='isGifts' value='"+result[i].list[j].isGifts+"'><input type='hidden' class='remark' value='"+result[i].list[j].remark+"'><input type='hidden' class='createUserName' value='"+result[i].list[j].createUserName+"'><input type='hidden' class='createUserId' value='"+result[i].list[j].createUserId+"'><input type='hidden' class='createTime' value='"+result[i].list[j].createTime+"'><li id=litem"+(i-1)+"-"+j+"><div class='itemMsg'><label class='name'>"+result[i].list[j].stockName+"</label><label class='price'>￥<span id=price"+(i-1)+"-"+j+">"+result[i].list[j].price+"</span></label><input type='hidden' class='detailid' value="+result[i].list[j].detailId+"><label class='warehour'>编号:"+result[i].list[j].stockNo+"</label><div class='sub_add'><span class='sub' onclick='sub(this)' id=sub"+(i-1)+"-"+j+">-</span><input type='text' onchange='getsum(this)' class='count' value='"+result[i].list[j].realNum+"' id='count"+(i-1)+"-"+j+"'><input type='hidden' onchange='getsum(this)' class='getCount' value='"+result[i].list[j].pageCount+"' id='getCount"+(i-1)+"-"+j+"'><input type='hidden' id='all"+(i-1)+"-"+j+"' value='"+result[i].list[j].realNum+"'><span class='add' onclick='add(this)' id=add"+(i-1)+"-"+j+">+</span></div></div></li>";
+			              }
+			              listHtml+="</ul>";
+			         }
+			       $("#content").empty().append(listHtml);
+			       if(sessionStorage.productObj!=null && sessionStorage.productObj!=""){
+			      		var array = sessionStorage.productObj;
+			      		var json = JSON.parse(array);
+			        	 var listHtml="";
+			        	for (var j = 0; j < json.length; j++) {
+			        		
+			        		var productJson = JSON.parse(json[j]);
+			        		
+			        		var obj_lis = document.getElementById("litem0").getElementsByTagName("li");
+				      		 for (var i = 1; i < obj_lis.length; i++) {
+				      				var liId = obj_lis[i].id;
+				      				//litem0-0
+				      				if(liId!=""){
+				      					var liIdsub = liId.substring(5);
+				      					var getNum = $("#getCount"+liIdsub).val();
+				      					var allCount = $("#all"+liIdsub).val();
+				      	            	if(parseInt(getNum)>parseInt(allCount)){
+				      	            		alert("输入数量过大。");
+				      	            		$("#count"+liIdsub).val(allCount);
+				      	            	}else{
+				      	            		$("#count"+liIdsub).val(getNum);
+				      	            		
+				      	            	}
+				      				}
+							}
+						}
+			      	 }
+			        }
+					})
+					}
+        function getsum(e){
+        	
+        	var tid = e.id.substring(5,8);
+            var count = parseInt($("#count" + tid).val());
+            var sumnum = parseInt($("#all" + tid).val());
+            if($("#count" + tid).val()==""){
+        		$("#count" + tid).val(0);
+        	}else{
+        		if((count+1)>sumnum){
+        			alert("超过库存！");
+        			$("#count" + tid).val(sumnum);
+        		}else{
+        			$("#count" + tid).val(count);
+        		}
+        	}
+        	/* var price=parseFloat(document.getElementById("price"+tid).innerHTML);
+        	var total=document.getElementById("total"+tid);
+        	var allPrices = $("#count" + tid).val()*price;
+        	allPrices = allPrices.toFixed(2);
+        	total.innerHTML="总价：￥"+allPrices; */
+        	
+        }
+        function sub(e) {
+        	var tid = e.id.substring(3);
+            var count = parseInt($("#count" + tid).val());
+            
+            if (count > 0) {
+                count--;
+                $("#count" + tid).val(count);
+                getsum($("#count" + tid)[0]);
+            } else {
+                $("#count" + tid).val("0");
+            }
+        }
+        function add(e) {
+        	 var tid = e.id.substring(3);
+            var count = parseInt($("#count" + tid).val());
+            var sumnum = parseInt($("#all" + tid).val());
+            if((count+1)>sumnum){
+            	alert("超过库存！");
+            }else{
+            	count++;
+            	getsum($("#count" + tid)[0]);
+                $("#count" + tid).val(count);
+                
+            }
+        }
+    </script>
+</body>
+<script type="text/javascript">
+var itemmsg = document.getElementsByClassName('itemMsg');
+var detailid = document.getElementsByClassName('detailid');
+for(var i=0;i<detailid.length;i++){
+		if(detailid[i].value=="0"){
+			itemmsg[i+1].parentNode.remove();
+		}
+	}
+</script>
+<script src="../resources/weixin/common/shareApiCk.js"> </script>  
+</html>

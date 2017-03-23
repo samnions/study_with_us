@@ -1,0 +1,45 @@
+package com.sd.farmework.service.impl; 
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.SysFunctionInfoMapper;
+import com.sd.farmework.pojo.SysFunctionInfo;
+import com.sd.farmework.service.SysFunctionInfoService;
+
+/** 
+ * 功能菜单信息表
+ * @author Administrator 
+ * 
+ */ 
+ @Service
+public class SysFunctionInfoServiceImpl extends BaseInfoServiceImpl implements SysFunctionInfoService{ 
+    @Autowired
+    private SysFunctionInfoMapper baseMapper;
+    public SysFunctionInfoMapper getBaseMapper(){
+     return baseMapper;
+    }
+    public void setBaseMapper(SysFunctionInfoMapper baseMapper){
+    	this.baseMapper = baseMapper;
+    }
+	@Override
+	public void add(SysFunctionInfo obj, String[] powers) throws Exception {
+		// TODO Auto-generated method stub
+		obj.setFunctionType("1");
+		baseMapper.add(obj);
+		obj.setFunctionType("2");
+  		for (int i = 0; i < powers.length; i++) {
+			
+ 			obj.setDictionaryId(powers[i].split("||")[0]);
+ 			obj.setDictionaryName(powers[i].split("||")[1]);
+ 			obj.setFunctionType("2");
+ 			obj.setFunctionName(powers[i].split("||")[1]);
+ 			obj.setParentFunctionId(obj.getFunctionId());
+			baseMapper.add(obj);
+		}
+	  
+		
+		
+	}
+}

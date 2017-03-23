@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>角色设置</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/demo/demo.css">
+	
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+
+
+<style type="text/css">
+body{
+  padding:0px 0px 0px 0px;
+}
+
+</style>
+
+</head>
+<body>
+	<div class="easyui-layout" style="width:100%;height:500px;">
+  		<div data-options="region:'west',split:true"  style="width:200px;">
+   			<ul id="sysdepartInfoId" class="easyui-tree" data-options="url:'../SysFunctionInfo/queryList.do?functionType=${functionType}&type=1&roleId=${roleId}',method:'get',animate:true,checkbox:true"></ul>
+  		</div>
+		<div data-options="region:'center',iconCls:'icon-ok'"  >
+		<div class="easyui-panel" style="width:400px;text-align: center">
+		<div style="padding:50px 60px 20px 60px">
+	    <form id="form1" method="post" >
+	    <input type="hidden" value="depart" name="type">
+	     <input type="hidden" value="${parentDepartId}" name="parentDepartId">
+	     <input type="hidden"  id="functionIds" name="functionIds">
+	     <input type="hidden" value="${unitId}" name="unitId">
+	     <input type="hidden" value="${unitName}" name="unitName">
+	       <input type="hidden" value="${opear}" name="opear" name="type">
+	       	<input type="hidden" value="${roleId}" name="roleIdP">
+	       	     	     <input type="hidden"  id="functionOperateIds" name="functionOperateIds">
+	      <input type="hidden"  id="functionType" name="functionType" value="${functionType}">
+	    	<table cellpadding="5">
+	    	<tr>
+	    		<td>单位名称:</td>
+	    			<td style="text-align:left">${unitName}</td>
+	    		</tr>
+	    		<tr>
+	    			<td>部门名称:</td>
+	    			<td style="text-align:left">${departName}</td>
+	    		</tr>
+	    		<tr>
+	    			<td>班组名称:</td>
+	    			<td style="text-align:left">${teamName}</td>
+	    		</tr>
+	    		<tr>
+	    			<td>角色名称:</td>
+	    			<td><input class="easyui-textbox" value="${roleName}"  type="text" name="roleName" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>备注:</td>
+	    			<td><input class="easyui-textbox" type="text" value="${roleDesc}"  name="roleDesc" data-options="required:true"></input></td>
+	    		</tr>
+	    		
+	    		<tr>
+	    			<td>是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="status">
+	    					<option value="Y">启用</option>
+	    					<option value="N">禁用</option>
+	    				</select>
+	    			</td>
+	    		</tr>
+	    	</table>
+	    </form>
+	    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+	    </div>
+	    </div>
+	</div>
+				</div>
+		
+			</div>
+ 
+</body>
+</html>
+<script type="text/javascript" >
+function submitForm(){
+	if("${functionType}"=="2"){
+		$("#functionOperateIds").val(","+getChecked()+",");
+	}else{
+		$("#functionIds").val(","+getChecked()+",");
+	}
+	
+	$.ajax({
+        cache: true,
+        type: "POST",
+        url:"../SysRoleInfo/saveAddUnitRole.do",
+        data:$('#form1').serialize(),// 你的formid
+        async: false,
+        error: function(request) {
+            alert("Connection error");
+        },
+        success: function(data) {
+           if(JSON.parse(data).code=="000"){
+        	   alert("角色信息保存成功 ！");
+        	   window.close();
+        	   window.opener.document.getElementsByName("right")[0].src="../SysRoleInfo/queryListIndex.do";
+           }
+        }
+    });
+}
+function getChecked(){
+	var nodes = $('#sysdepartInfoId').tree('getChecked');
+	var s = '';
+	for(var i=0; i<nodes.length; i++){
+		if (s != ''){
+			s += ',';
+		}
+		
+		var nodeId=nodes[i].id;
+		if("${functionType}"=="2"){
+			if(nodeId.length==12){
+				s += nodeId;
+			}
+		}else{
+			if(nodeId.length==9){
+				s += nodeId;
+			}
+		}
+	}
+	 return s;
+}
+
+	function clearForm(){
+		$('#ff').form('clear');
+	}
+
+</script>

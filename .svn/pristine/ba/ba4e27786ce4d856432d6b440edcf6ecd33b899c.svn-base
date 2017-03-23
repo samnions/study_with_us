@@ -1,0 +1,455 @@
+package com.sd.farmework.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.google.gson.JsonObject;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.common.TreeService;
+import com.sd.farmework.pojo.SysDepartInfo;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.service.SysDepartInfoService;
+
+/**
+ * 团队组织机构表
+ * 
+ * @author Administrator
+ * 
+ */
+@Controller
+@Scope("prototype")
+@RequestMapping(value = "/SysDepartInfo")
+public class SysDepartInfoController {
+	@Autowired
+	private SysDepartInfoService SysDepartInfoService;
+
+	private Logger logger = Logger.getLogger(SysDepartInfoController.class);
+
+	/**
+	 * 1、添加单位信息页面
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param sysDepartInfo
+	 * @param model
+	 * @param pid
+	 * @return
+	 */
+	@RequestMapping(value = "/addUnit", method = RequestMethod.GET)
+	public String addUnit(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo sysDepartInfo,
+			Model model, String pid) {
+		model.addAttribute("parentDepartId", sysDepartInfo.getParentDepartId());
+
+		return "sysManage/sysUnitInfo/addUnit";
+	}
+
+	/**
+	 * 2、 添加单位信息提交保存
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/saveAddUnit", method = RequestMethod.POST)
+	public String saveAddUnit(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo sysDepartInfo,
+			Model model, String type) {
+		Map map = new HashMap();
+		try {
+			HttpSessionProvider httpSessionProvider = new HttpSessionProvider();
+			SysUserInfo sessionUserInfo = httpSessionProvider
+					.getCurrentUserSession(session, request, response);
+			sysDepartInfo = (SysDepartInfo) httpSessionProvider.fillBaseInfo(
+					sysDepartInfo, sessionUserInfo);
+			if ("unit".equals(type)) {
+				sysDepartInfo.setNodeType(1);
+				sysDepartInfo.setIsVirtual("1");
+			}
+
+			SysDepartInfoService.addUnit(sysDepartInfo);
+			SysDepartInfoService.addUnitDepart(sysDepartInfo);
+			SysDepartInfoService.addUnitRole(sysDepartInfo);
+			map.put("code", "000");
+			map.put("msg", "success");
+			JSONObject obj = JSONObject.fromObject(map);
+			response.getWriter().write(obj.toString());
+			response.getWriter().close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			map.put("code", "001");
+			map.put("msg", "error");
+			JSONObject obj = JSONObject.fromObject(map);
+			try {
+				response.getWriter().write(obj.toString());
+				response.getWriter().close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 1、添加部门信息页面
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param sysDepartInfo
+	 * @param model
+	 * @param pid
+	 * @return
+	 */
+	@RequestMapping(value = "/addDepart", method = RequestMethod.GET)
+	public String addDepart(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo sysDepartInfo,
+			Model model, String unitId, String unitName) {
+		model.addAttribute("unitName", unitName);
+		model.addAttribute("unitId", unitId);
+		model.addAttribute("parentDepartId", sysDepartInfo.getParentDepartId());
+
+		return "sysManage/sysUnitInfo/addDepart";
+	}
+
+	/**
+	 * 2、 添加部门信息提交保存
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/saveAddDepart", method = RequestMethod.POST)
+	public String saveAddDepart(HttpSession session,
+			HttpServletRequest request, HttpServletResponse response,
+			SysDepartInfo sysDepartInfo, Model model, String type) {
+		Map map = new HashMap();
+		try {
+			HttpSessionProvider httpSessionProvider = new HttpSessionProvider();
+			SysUserInfo sessionUserInfo = httpSessionProvider
+					.getCurrentUserSession(session, request, response);
+			sysDepartInfo = (SysDepartInfo) httpSessionProvider.fillBaseInfo(
+					sysDepartInfo, sessionUserInfo);
+			if ("depart".equals(type)) {
+				sysDepartInfo.setNodeType(1);
+				sysDepartInfo.setIsVirtual("2");
+			}
+
+			SysDepartInfoService.addDepart(sysDepartInfo);
+			SysDepartInfoService.addDepartTeam(sysDepartInfo);
+			SysDepartInfoService.addDepartRole(sysDepartInfo);
+			map.put("code", "000");
+			map.put("msg", "success");
+			JSONObject obj = JSONObject.fromObject(map);
+			response.getWriter().write(obj.toString());
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+			map.put("code", "001");
+			map.put("msg", "error");
+			JSONObject obj = JSONObject.fromObject(map);
+			try {
+				response.getWriter().write(obj.toString());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 1、添加班组信息页面
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param sysDepartInfo
+	 * @param model
+	 * @param pid
+	 * @return
+	 */
+	@RequestMapping(value = "/addTeam", method = RequestMethod.GET)
+	public String addTeam(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo sysDepartInfo,
+			Model model, String unitId, String unitName, String departName) {
+		model.addAttribute("unitName", unitName);
+		model.addAttribute("unitId", unitId);
+		model.addAttribute("departName", departName);
+		model.addAttribute("parentDepartId", sysDepartInfo.getParentDepartId());
+
+		return "sysManage/sysUnitInfo/addTeam";
+	}
+
+	/**
+	 * 2、 添加部门信息提交保存
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/saveAddTeam", method = RequestMethod.POST)
+	public String saveAddTeam(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo sysDepartInfo,
+			Model model, String type) {
+		Map map = new HashMap();
+		try {
+			HttpSessionProvider httpSessionProvider = new HttpSessionProvider();
+			SysUserInfo sessionUserInfo = httpSessionProvider
+					.getCurrentUserSession(session, request, response);
+			sysDepartInfo = (SysDepartInfo) httpSessionProvider.fillBaseInfo(
+					sysDepartInfo, sessionUserInfo);
+			if ("team".equals(type)) {
+				sysDepartInfo.setNodeType(1);
+				sysDepartInfo.setIsVirtual("4");
+			}
+
+			SysDepartInfoService.addTeam(sysDepartInfo);
+			SysDepartInfoService.addTeamRole(sysDepartInfo);
+			map.put("code", "000");
+			map.put("msg", "success");
+			JSONObject obj = JSONObject.fromObject(map);
+			response.getWriter().write(obj.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			map.put("code", "001");
+			map.put("msg", "error");
+			JSONObject obj = JSONObject.fromObject(map);
+			try {
+				response.getWriter().write(obj.toString());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 修改
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	public String update(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo SysDepartInfo,
+			Model model) {
+		try {
+			SysDepartInfoService.update(SysDepartInfo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 修改
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public String delete(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo SysDepartInfo,
+			Model model) {
+		try {
+			SysDepartInfoService.delete(SysDepartInfo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 打开组织架构页面
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysDepartInfo
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/queryListIndex", method = RequestMethod.GET)
+	public String queryListIndex(HttpSession session,
+			HttpServletRequest request, HttpServletResponse response,
+			SysDepartInfo SysDepartInfo, Model model) {
+		return "sysManage/sysUnitInfo/index";
+	}
+
+	/**
+	 * 查询不分页列表
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/queryList", method = RequestMethod.GET)
+	public String queryList(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo SysDepartInfo,
+			Model model) {
+		try {
+			List<String> listNodeType = new ArrayList();
+			listNodeType.add("0");
+			listNodeType.add("1");
+			listNodeType.add("2");
+			listNodeType.add("3");
+			listNodeType.add("4");
+			SysDepartInfo.setNodeTypes(listNodeType);
+			List list = SysDepartInfoService.queryList(SysDepartInfo);
+			List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+			for (int i = 0; i < list.size(); i++) {
+				SysDepartInfo sysDepartInfo = (SysDepartInfo) list.get(i);
+				Map<String, Object> map = new HashMap();
+				map.put("PARENT_ID", sysDepartInfo.getParentDepartId());
+				map.put("ID", sysDepartInfo.getDepartId());
+				map.put("NAME", sysDepartInfo.getDepartName());
+				map.put("isVirtual", sysDepartInfo.getIsVirtual());
+				listMap.add(map);
+			}
+			TreeService s = new TreeService();
+			String srt = JSONArray.fromObject(s.getTreeData(listMap, "-1"))
+					.toString();
+			response.getWriter().write(srt);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 查询分页列表
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/getDepartInfoByParentId", method = RequestMethod.POST)
+	public String getDepartInfoByParentId(String parentDepartId,
+			HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, Model model,int page,int rows) {
+		try {
+			SysDepartInfo SysDepartInfo = new SysDepartInfo();
+			SysDepartInfo.setParentDepartId(parentDepartId);
+			SysDepartInfo.setPageSize(rows);
+			SysDepartInfo.setCurrPage(page);
+			int  count=SysDepartInfoService.getDepartInfoByParentIdCount(SysDepartInfo);
+			List list = SysDepartInfoService
+					.getDepartInfoByParentId(SysDepartInfo);
+			//{total:15,rows:[{name:'test',age:12},{name:'test2',age:18}]}
+			Map map = new HashMap();
+			map.put("total", count);
+			map.put("rows", JSONArray.fromObject(list));
+			JSONObject ojb =JSONObject.fromObject(map);
+ 			response.getWriter().write(ojb.toString());
+			
+ 			response.getWriter().close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 查询分页列表
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/queryListByPage", method = RequestMethod.POST)
+	public String queryListByPage(HttpSession session,
+			HttpServletRequest request, HttpServletResponse response,
+			SysDepartInfo SysDepartInfo, Model model) {
+		try {
+			SysDepartInfoService.queryCount(SysDepartInfo);
+			SysDepartInfoService.queryListByPage(SysDepartInfo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+
+	/**
+	 * 通过任意条件查询一条信息
+	 * 
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param SysApprovenFunction
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/query", method = RequestMethod.POST)
+	public String query(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, SysDepartInfo SysDepartInfo,
+			Model model) {
+		try {
+			SysDepartInfoService.query(SysDepartInfo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}

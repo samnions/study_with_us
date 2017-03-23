@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>WeUI</title>
+<link rel="stylesheet"
+	href="../resources/weixin/styles/weui.css" />
+<link rel="stylesheet"
+	href="../resources/weixin/styles/weui.min.css" />
+<link rel="stylesheet"
+	href="../resources/weixin/styles/example.css" />
+<script src="../resources/weixin/js/zepto.min.js"></script>
+<script type="text/javascript"
+	src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="../resources/weixin/js/weui.min.js"></script>
+<script src="../resources/weixin/js/example.js"></script>
+<style type="text/css">
+.mytable {
+	width: 100%;
+	height: 100px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+
+.item1 {
+	padding: 5px;
+	float: left;
+}
+
+.item2 {
+	padding: 10px;
+	float: right;
+}
+
+.item3 {
+	padding-left: 20px;
+	float: left;
+}
+
+.item4 {
+	padding-right: 10px;
+	float: right;
+}
+body{
+	background: #EFEFF4;
+}
+.content{
+    		 background-color:#FFF; width: 100%;height: 110px;
+    		 border-bottom: 0.1px solid #d9d9d9;
+    		 margin-bottom: 20px;
+    	}
+    	.date{
+    		width: 70%;height: 100%;float: left;
+    		text-align: center;
+    		margin-top: 20px;
+    	}
+    	.btn{
+    		width: 29%;height: 100%;float: left;
+    		text-align: center;
+    		margin-top: 10px;
+    	}
+    	.item{
+    		width: 100%;height: 50%;
+    	}
+    	.item .pra_name{
+    		width: 40%;height: 100%;
+    		text-align: right;
+    		float:left;
+    		font-size:10px;
+    		font-family:微软雅黑;
+    	}
+    	.item .pra_date{
+    		width: 55%;height: 100%;
+    		text-align: left;
+    		float:left;
+    		font-size:14px;
+    		font-family:微软雅黑;
+    	}
+    	.btn_item{
+    		 width: 100%;height: 48%;text-align: center;
+    		 margin-top: 10px;
+    	}
+.hader{
+	    	width: 100%;
+	    	text-align: center;
+	    	background-color: #fff;
+	    	height: 40px;
+	    	font-family: 微软雅黑;
+    	}
+    	.hader span{
+	    	position: absolute;
+    		top:5px;
+    		left:40%;
+    	}
+    	#reback{
+    		position: absolute;
+    		top:5px;
+    		left:15px;
+    	}
+    	#showfind{
+    		position: absolute;
+    		top:5px;
+    		right:15px;
+    	}
+</style>
+</head>
+<body>
+<div class="hader"><a href="../weixin/index.html" id="reback"><img src="../resources/images/icon_back.png" style="width: 20px;margin-top:3px; height: 20px;"></a><span>审核</span><!-- <a href="findlist.html" id="showfind"><img src="../resources/images/icon_add.png" style="width: 23px;height: 23px;"></a> --></div>
+	<div class="weui-search-bar" id="searchBar">
+	
+		<form class="weui-search-bar__form">
+			<div class="weui-search-bar__box">
+				<i class="weui-icon-search"></i> <input type="search"
+					class="weui-search-bar__input" id="searchInput" placeholder="搜索"
+					required /> <a href="javascript:" class="weui-icon-clear"
+					id="searchClear"></a>
+			</div>
+			<label class="weui-search-bar__label" id="searchText"> <i
+				class="weui-icon-search"></i> <span>搜索</span>
+			</label>
+		</form>
+		<a href="javascript:" class="weui-search-bar__cancel-btn"
+			id="searchCancel">取消</a>
+	</div>
+	<div class="page__bd" style="height: 100%;">
+		<div class="weui-tab">
+			<div class="weui-navbar">
+				<div class="weui-navbar__item weui-bar__item_on" id="rk">入库审核</div>
+				<div class="weui-navbar__item" id="ck">出库审核</div>
+				<div class="weui-navbar__item" id="pdd">盘点审核</div>
+			</div>
+			<div class="weui-tab__panel" id="pd"></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document)
+				.ready(
+						function() {
+							var pdhtml = "";
+							var data = "";
+							var a = location.href;
+							var b = a.split("=");
+							
+							if (b == a) {
+								$.ajax({
+									type : "GET",
+											dataType : "json",
+											url : "../rkApprove/wxwaitingApprovenList.do",
+											success : function(data) {
+												var dahtml = "";
+												$("#pd").html("");
+												 for (var i = 0; i < data.testList.length; i++) { 
+													
+														dahtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>采购单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/rkApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskStorageDetail.html?rkId="+ data.testList[i].sourceTablePkColumnValue+ "&inputStauts=1'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+
+												 }
+												 $("#pd").append(dahtml);
+
+											},
+											error : function(rec) {
+												console.info("网络异常,请稍后再试");
+											}
+										});
+
+							} else {
+								if (b[1] == "rk") {
+									$
+											.ajax({
+												type : "GET",
+												dataType : "json",
+												url : "../rkApprove/wxwaitingApprovenList.do",
+												success : function(data) {
+													var rkhtml = "";
+													$("#pd").html("");
+													for (var i = 0; i < data.testList.length; i++) {
+														rkhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>入库单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/rkApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskStorageDetail.html?rkId="+ data.testList[i].sourceTablePkColumnValue+ "&inputStauts=1'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+
+													}
+													$("#pd").append(rkhtml);
+													$("#rk").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+												},
+												error : function(rec) {
+													console.info("网络异常,请稍后再试");
+												}
+											});
+
+								}
+
+								if (b[1] == "ck") {
+									 
+									$
+											.ajax({
+												url : "../ckApprove/wxwaitingApprovenList.do",
+												success : function(data) {
+
+													var ckhtml = "";
+													$("#pd").html("");
+													for (var i = 0; i < data.testList.length; i++) {
+
+														ckhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>出库单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/ckApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskoutwareDetail.html?ckId="+ data.testList[i].sourceTablePkColumnValue+ "'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+														
+													}
+													$("#pd").append(ckhtml);
+													$("#ck").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+												},
+												error : function(err) {
+													alert("数据异常");
+												}
+											});
+								}
+								if (b[1] == "pdd") {
+									$
+											.ajax({
+												type : "GET",
+												url : "../pdApprove/wxwaitingApprovenList.do",
+												dataType : "json",
+												success : function(data) {
+													$("#pd").html("");
+													pdhtml = "";
+													for (var i = 0; i < data.testList.length; i++) {
+														pdhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>盘点单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/pdApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskinventoryDetail.html?pdId="+ data.testList[i].sourceTablePkColumnValue+ "'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+													}
+													$("#pd").append(pdhtml);
+													$("#pdd").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+												},
+												error : function(rec) {
+													console.info("网络异常,请稍后再试");
+												}
+											});
+								}
+
+							}
+ 
+							
+							$("#rk")
+									.click(
+											function() {
+												$
+														.ajax({
+															type : "GET",
+															dataType : "json",
+															url : "../rkApprove/wxwaitingApprovenList.do",
+															success : function(
+																	data) {
+																var rkhtml = "";
+																$("#pd").html(
+																		"");
+																for (var i = 0; i < data.testList.length; i++) {
+
+																	rkhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>入库单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/rkApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskStorageDetail.html?rkId="+ data.testList[i].sourceTablePkColumnValue+ "&inputStauts=1'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+
+																}
+																$("#pd")
+																.append(
+																		rkhtml);
+																$("#rk").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+
+															},
+															error : function(
+																	rec) {
+																console
+																		.info("网络异常,请稍后再试");
+															}
+														});
+
+											});
+							$("#ck").click(
+											function() {
+												
+												$.ajax({
+															 url : "../ckApprove/wxwaitingApprovenList.do",
+															success : function(
+																	data) {
+
+																var ckhtml = "";
+																$("#pd").html("");
+																for (var i = 0; i < data.testList.length; i++) {
+
+																	ckhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>出库单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/ckApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskoutwareDetail.html?ckId="+ data.testList[i].sourceTablePkColumnValue+ "'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+																}
+																$("#pd")
+																.append(
+																		ckhtml);
+																$("#ck").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+															},
+															error : function(
+																	err) {
+																alert("数据异常");
+															}
+														});
+											});
+							$("#pdd")
+									.click(
+											function() {
+												$
+												.ajax({
+													type : "GET",
+													url : "../pdApprove/wxwaitingApprovenList.do",
+													
+													
+													dataType : "json",
+													success : function(data) {
+												
+														$("#pd").html("");
+														pdhtml = "";
+														for (var i = 0; i < data.testList.length; i++) {
+															pdhtml += "<div class='content'><div class='date'><div class='item'><div class='pra_name'><span>盘点单号：</span></div><div class='pra_date'><span>"+data.testList[i].taskName+"</span></div></div><div class='item'><div class='pra_name'><span>申请时间：</span></div><div class='pra_date'><span>"+data.testList[i].approvenSendTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='../weixin/pdApprove.html?taskId="+ data.testList[i].taskId+ "'class='weui-btn weui-btn_mini weui-btn_primary'>审核</a></div></div><div class='btn_item'><div><a href='../weixin/taskinventoryDetail.html?pdId="+ data.testList[i].sourceTablePkColumnValue+ "'class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div></div></div>";
+														}
+														$("#pd").append(pdhtml);
+														$("#pdd").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+													},
+															error : function(
+																	rec) {
+																console
+																		.info("网络异常,请稍后再试");
+															}
+														});
+											});
+						});
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			$('.weui-navbar__item').on(
+					'click',
+					function() {
+			$(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+					});
+		});
+	</script>
+
+</body>
+</html>

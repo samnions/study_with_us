@@ -1,0 +1,26 @@
+package com.sd.farmework.common;
+
+
+
+public class PropertiesConstant {
+	
+ 
+
+	public   String serverDomain ;
+	public   String serverName ;
+
+	
+	public String getServerDomain() {
+		return serverDomain;
+	}
+	public void setServerDomain(String serverDomain) {
+		this.serverDomain = serverDomain;
+	} 
+	public String getServerName() {
+		return serverName;
+	}
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+ 
+}

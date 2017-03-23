@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>功能模块设置</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/demo/demo.css">
+	
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+ 
+
+<style type="text/css">
+body{
+  padding:0px 0px 0px 0px;
+}
+
+</style>
+
+</head>
+<body>
+	<div class="easyui-layout" style="width:100%;height:500px;">
+  
+		<div data-options="region:'center',iconCls:'icon-ok'"  >
+		<div class="easyui-panel"  style="width:540px;text-align: center">
+		<div style="padding:50px 70px 40px 80px">
+	    <form id="form1" method="post" >
+	       <input value="${sysFunction.functionId}" name="functionId" type="hidden">
+ 	      
+	    	<table cellpadding="5">
+	    	<tr>
+	    		<tr>
+	    			<td>功能名称:</td>
+	    			<td><input class="easyui-textbox" type="text"  value="${sysFunction.functionName}" name="functionName" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>功能地址:</td>
+	    			<td><input class="easyui-textbox"  type="text" name="functionUrl"  value="${sysFunction.functionUrl}" data-options="required:true"></input></td>
+	    		</tr>
+	    	   <tr>
+	    		<td>操作菜单:</td>
+	    			<td>
+	    			    <table>
+	    			    <tr>
+	    			    <#list list as item> 
+	    			    		<td><input  type="checkbox"  name="powerId" value="${item.dictionaryId}&${item.dictionaryName}" id="ck${item.dictionaryId}"/>
+	    			    		 <#list operList as oper> 
+	    			    		    <#if oper.dictionaryId==item.dictionaryId>checked</#if>
+	    			    		
+	    			    		     
+	    			    		</#list>
+	    			    		>
+	    			    		<label for="ck${item.dictionaryId}">${item.dictionaryName}</label></td>
+	    			    			<#if item_index%3==2></tr></#if>
+	    			    </#list>
+	    			    
+	    			    </table>
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>功能描述:</td>
+	    			<td><input class="easyui-textbox"  type="text" name="functionDesc"  value="${sysFunction.functionDesc}"  data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="status">
+	    					<option value="Y">启用</option>
+	    					<option value="N">禁用</option>
+	    				</select>
+	    			</td>
+	    		</tr>
+	    		
+	    		
+	    	</table>
+	    </form>
+	    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+	    </div>
+	    </div>
+	</div>
+				</div>
+		
+			</div>
+</body>
+</html>
+<script type="text/javascript" >
+function submitForm(){
+	 
+	
+	$.ajax({
+        cache: true,
+        type: "POST",
+        url:"../SysFunctionInfo/saveEditFunctionInfo.do",
+        data:$('#form1').serialize(),// 你的formid
+        async: false,
+        error: function(request) {
+            alert("Connection error");
+        },
+        success: function(data) {
+           if(JSON.parse(data).code=="000"){
+        	   alert("信息保存成功 ！");
+        	   window.close();
+        	   window.opener.document.getElementsByName("right")[0].src="../SysFunctionInfo/queryListIndex.do";
+           }
+        }
+    });
+} 
+
+	function clearForm(){
+		$('#ff').form('clear');
+	}
+
+</script>

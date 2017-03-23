@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>WeUI</title>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script src="../resources/weixin/js/zepto.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <script src="../resources/weixin/js/example.js"></script>
+</head>
+<body>
+    <div class="page__hd">
+        <h1 class="page__title">进出库系统</h1>
+        <p class="page__desc">为微信web服务量身设计</p>
+    </div>
+    <div class="weui-grids">
+        <a href="../weixin/storage.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/icon_tabbar.png" alt="">
+            </div>
+            <p class="weui-grid__label">入库管理</p>
+        </a>
+		<a href="../weixin/outwarehouselist.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/icon_tabbar.png" alt="">
+            </div>
+            <p class="weui-grid__label">出库管理</p>
+        </a>
+        <a href="../weixin/inventory.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/icon_tabbar.png" alt="">
+            </div>
+            <p class="weui-grid__label">盘点管理</p>
+        </a>
+        <a href="../weixin/waitTask.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/icon_tabbar.png" alt="">
+            </div>
+            <p class="weui-grid__label">审核管理</p>
+        </a>
+        <a href="../weixin/getcode/sys" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/icon_tabbar.png" alt="">
+            </div>
+            <p class="weui-grid__label">系统设置</p>
+        </a>
+    </div>
+</html>

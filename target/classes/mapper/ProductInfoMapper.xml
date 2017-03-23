@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.ProductInfoMapper">
+	<resultMap type="com.sd.farmework.pojo.ProductInfo" id="productMap">
+		<result column="PO_ID" property="poid"/>
+		<result column="STOCK_NO" property="stockNo"/>
+		<result column="STOCK_NAME" property="stockName"/>
+		<result column="UNIT" property="unit"/>
+		<result column="STANDARD" property="standard"/>
+		<result column="TYPE" property="type"/>
+		<result column="PRICE" property="price"/>
+		<result column="STATUS" property="status"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="CREATE_USER_ID" property="createUserId"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="UPDATE_USER_ID" property="updateUserId"/>
+		<result column="UPDATE_USER_NAME" property="updateUserName"/>
+	</resultMap>
+	<!-- 查询单个物资信息-->
+	<select id="query"  parameterType="com.sd.farmework.pojo.ProductInfo"  resultMap="productMap">
+			 SELECT P.PO_ID,
+             P.STOCK_NO,
+             P.STOCK_NAME,
+             P.UNIT,
+             P.STANDARD,
+             P.TYPE,
+             P.PRICE,
+             P.STATUS,
+             P.CREATE_TIME,
+             P.CREATE_USER_ID,
+             P.CREATE_USER_NAME,
+             P.UPDATE_TIME,
+             P.UPDATE_USER_ID,
+             P.UPDATE_USER_NAME
+      FROM PRODUCT_INFO P
+      WHERE P.PO_ID = #{poid}
+	</select>
+	
+</mapper>

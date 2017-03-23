@@ -1,0 +1,137 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.ApprovenUtil;
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.mapper.CkOrdersMapper;
+import com.sd.farmework.mapper.SysApprovenFunctionRuleMapper;
+import com.sd.farmework.mapper.SysApprovenRulePersonMapper;
+import com.sd.farmework.mapper.SysApprovenTaskMapper;
+import com.sd.farmework.mapper.SysApprovenTaskedMapper;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.SysApprovenTask;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.service.CkOrdersService;
+/**
+ * 出库管理
+ * @author 秦波
+ * @date:2017年1月5日 下午3:26:10
+ */
+@Service
+public class CkOrdersServiceImpl   extends BaseInfoServiceImpl  implements CkOrdersService {
+
+	private static Logger logger = Logger.getLogger(CkOrdersServiceImpl.class);
+	@Autowired
+	private SysApprovenRulePersonMapper ruleMapper;
+	@Autowired
+	private SysApprovenTaskMapper sysApprovenTaskMapper;
+	@Autowired
+	private SysApprovenTaskedMapper sysApprovenTaskedMapper;
+	@Autowired
+	private SysApprovenFunctionRuleMapper sysApprovenFunctionRuleMapper;
+	@Autowired
+	private CkOrdersMapper baseMapper;
+
+	public CkOrdersMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(CkOrdersMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List<BaseInfo> queryCKDetailList(BaseInfo obj) {
+		return this.baseMapper.queryCKDetailList(obj);
+	}
+
+	@Override
+	public String queryseq() {
+		return this.baseMapper.queryseq();
+	}
+
+	@Override
+	public void setstatus(BaseInfo obj) {
+		this.baseMapper.setstatus(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> wxckqueryList(CkOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxckqueryList(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> queryCkShenHe(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHe(obj);
+	}
+
+	@Override
+	public Integer queryCkShenHeCount(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeCount(obj);
+	}
+
+	@Override
+	public Integer queryCkShenHeCounted(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeCounted(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> queryCkShenHeed(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeed(obj);
+	}
+
+	@Override
+	public Map addCkApproven(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		
+		String approvenFunctionId = (String)request.getAttribute("approvenFunctionId");
+		CkOrdersInfo obj = (CkOrdersInfo)request.getAttribute("ckOrdersInfo");
+		
+		HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		
+		SysUserInfo sessionUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		
+		obj=(CkOrdersInfo) httpSessionProvider.fillBaseInfo(obj, sessionUserInfo);
+		 
+		//审批开始
+		 //sys_approven_task
+		 SysApprovenTask sysTaskP =new SysApprovenTask();
+		 //任务名称
+		 sysTaskP.setTaskName("出库审核");
+		 //业务表名
+		 sysTaskP.setSourceTable("Ck_Orders_Info");
+		 //业务表主键名称
+		 sysTaskP.setSourceTablePkColumnName("ck_Id");
+		 //业务表主键对应值
+		 String seq = (String) request.getAttribute("seq");
+		 sysTaskP.setSourceTablePkColumnValue(seq);
+		 //审批工具类
+		 ApprovenUtil appr = new ApprovenUtil();
+		 //请假调休审批 0000000001 sys_approven_function_rule
+		 sysTaskP = (SysApprovenTask) httpSessionProvider.fillBaseInfo(sysTaskP, sessionUserInfo);
+		 Map map= appr.addApprovenTask(session, request, response, approvenFunctionId,sysTaskP,sysApprovenTaskMapper,ruleMapper,sysApprovenFunctionRuleMapper);
+		 if(!map.get("code").equals("000")){
+			 throw new Exception(map.get("code").toString());
+		 }
+		 return map;
+	}
+
+
+}

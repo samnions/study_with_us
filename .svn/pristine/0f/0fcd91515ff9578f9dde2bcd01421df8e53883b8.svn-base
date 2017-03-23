@@ -1,0 +1,4 @@
+#jndiName=java:comp/env/mydataSource
+jndiName=java:comp/env/kcManager
+
+ 

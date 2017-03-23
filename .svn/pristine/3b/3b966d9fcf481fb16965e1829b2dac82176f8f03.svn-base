@@ -1,0 +1,80 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.CkOrdersMapper;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.service.CkOrdersService;
+/**
+ * 出库管理
+ * @author 秦波
+ * @date:2017年1月5日 下午3:26:10
+ */
+@Service
+public class CkOrdersServiceImpl   extends BaseInfoServiceImpl  implements CkOrdersService {
+
+	private static Logger logger = Logger.getLogger(CkOrdersServiceImpl.class);
+
+	@Autowired
+	private CkOrdersMapper baseMapper;
+
+	public CkOrdersMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(CkOrdersMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List<BaseInfo> queryCKDetailList(BaseInfo obj) {
+		return this.baseMapper.queryCKDetailList(obj);
+	}
+
+	@Override
+	public String queryseq() {
+		return this.baseMapper.queryseq();
+	}
+
+	@Override
+	public void setstatus(BaseInfo obj) {
+		this.baseMapper.setstatus(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> wxckqueryList(CkOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxckqueryList(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> queryCkShenHe(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHe(obj);
+	}
+
+	@Override
+	public Integer queryCkShenHeCount(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeCount(obj);
+	}
+
+	@Override
+	public Integer queryCkShenHeCounted(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeCounted(obj);
+	}
+
+	@Override
+	public List<CkOrdersInfo> queryCkShenHeed(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryCkShenHeed(obj);
+	}
+
+
+}

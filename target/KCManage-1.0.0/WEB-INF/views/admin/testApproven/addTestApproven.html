@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="../resources/css/pintuer.css">
+<link rel="stylesheet" href="../resources/css/admin.css">
+<script src="../resources/js/jquery.min.js"></script>
+<script src="../resources/js/pintuer.js"></script>
+<script type="text/javascript" src="../resources/js-date/WdatePicker.js"></script>
+<script>
+	function click_file() {
+		$(".file_con").click();
+	}
+</script>
+<style type="text/css">
+.phone {
+	position: absolute;
+	top: 10%;
+	left: 80%;
+}
+
+#up_button {
+	margin-top: 20px;
+}
+
+#up_text {
+	width: 100%;
+	height: 100%;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#phone_up {
+	width: 140px;
+	height: 140px;
+	border: 1px dashed red;
+}
+.label{
+	width: 20%; 
+}
+</style>
+</head>
+<body>
+	<div class="panel admin-panel">
+		<div class="panel-head" id="add">
+			<strong><span class="icon-pencil-square-o"></span>新增请假信息	<a href="../approvenTestIndex.html">首页</a></strong>
+		</div>
+		<form method="get" class="form-x" action="../approven/saveTask.do">
+		<div class="body-content">
+			
+			
+				<div class="form-group" style="display: block; width: 50%; float: left;">
+					<div class="label" style="margin-left: 255px;">
+						<label>请假类型：</label>
+					</div>
+					<div class="a">
+						<input type="text" class="input w50"  name="testName" data-validate="required:请输入正确格式" />
+						 
+					</div>
+				</div>
+			
+		</div>
+			<div class="body-content">
+			
+			
+				<div class="form-group" style="display: block; width: 50%; float: left;">
+					<div class="label" style="margin-left: 255px;">
+						<label>请假原因：</label>
+					</div>
+					<div class="a">
+						<input type="text" class="input w50"  name="testRemark" data-validate="required:请输入正确格式"/>
+						 
+					</div>
+				</div>
+			
+		</div>
+			<div class="body-content">
+			
+			
+				<div class="form-group" style="display: block; width: 50%; float: left;">
+					<div class="label" style="margin-left: 255px;">
+						<label></label>
+					</div>
+					<div class="a">
+						<button class="button bg-main icon-check-square-o" type="submit">发布审核</button>
+						 
+					</div>
+				</div>
+			
+		</div>
+			<div class="body-content">
+			
+			
+				<div class="form-group" style="display: block; width: 50%; float: left;">
+					<div class="label" style="margin-left: 255px;">
+						<label></label>
+					</div>
+					<div class="a">
+ ${msg}						 
+					</div>
+				</div>
+			
+		</div>
+		 
+	</form>
+	</div>
+
+</body>
+</html>

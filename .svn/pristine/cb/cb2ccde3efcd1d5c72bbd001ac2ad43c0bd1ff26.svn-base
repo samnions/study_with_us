@@ -1,0 +1,28 @@
+package com.sd.farmework.mapper;
+
+
+
+
+import java.util.List;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.BaseMapper;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfo;
+
+public interface PdOrdersInfoMapper extends BaseMapper {
+	 
+	List wxqueryList(PdOrdersInfo obj);
+	
+	String querySeq();
+	
+	List wxqueryListpd(PdOrdersInfo obj);
+	
+	 List<PdOrdersInfo> queryPdShenHe(BaseInfo obj);
+		Integer queryPdShenHeCount(BaseInfo obj);
+		
+		Integer queryPdShenHeCounted(BaseInfo obj);
+		List<PdOrdersInfo> queryPdShenHeed(BaseInfo obj);
+		PdOrdersInfo queryByTaskId(BaseInfo obj);
+		void updateByTaskId(BaseInfo obj);
+ }

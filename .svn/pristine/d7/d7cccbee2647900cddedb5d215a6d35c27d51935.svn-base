@@ -1,0 +1,98 @@
+package com.sd.farmework.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.common.WxConstant;
+import com.sd.farmework.common.util.StringUtil;
+import com.sd.farmework.common.util.WeixinUtil;
+import com.sd.farmework.pojo.ProductInfo;
+import com.sd.farmework.service.ProductInfoService;
+
+
+
+/**
+ * 微信扫一扫
+ * @author 王超超
+ * 2017-1-06
+ * 
+ */
+
+@Scope("prototype")
+@RequestMapping(value="/weixinUtil")
+@Controller
+public class WxUtilController {
+
+	private static Logger logger = Logger.getLogger(WxUtilController.class);
+	//@Autowired 
+	private WxConstant wxConstant = new WxConstant();
+	@Autowired 
+	private ProductInfoService productInfoService;
+	
+	@ResponseBody
+	@RequestMapping(value = "/getJsSdkData", method = RequestMethod.GET) 
+	public Object  weixinpay(HttpServletRequest request) throws Exception{
+		 
+		//String url ="http://www.caixiaolian.com/Farmework/wx/share.html";
+		String url ="";
+		String shareType = request.getParameter("type");
+		if("1".equals(shareType)){
+			url ="http://crm.cnictt.cn/InventoryManager/weixin/inputwarehouse.html?orderNo=1";
+		}else if("2".equals(shareType)){
+			url ="http://crm.cnictt.cn/InventoryManager/weixin/findlistdetail.html?rkId=11";
+		}else if("3".equals(shareType)){
+			url ="http://crm.cnictt.cn/InventoryManager/weixin/inventoryAdd.html";
+		}
+		
+		Map<String, String> map = WeixinUtil.getJsSDKMap(wxConstant, url);
+		map.put("appId", wxConstant.getWxAppId());
+	     for (Map.Entry entry : map.entrySet()) {
+	            System.out.println(entry.getKey() + ", " + entry.getValue());
+	     }
+	     map.remove("jsapi_ticket");
+	      
+		return map;
+		
+	}
+	
+	
+	/**
+	 * 
+	 * 查询单个物资信息
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/queryProductInfoByID", method = RequestMethod.POST) 
+	public void  queryProductInfoByID(HttpServletRequest request,ProductInfo product,HttpServletResponse response) throws Exception{
+	System.out.println("进啦了");	 
+		logger.info("查询单个物资入参信息："+product.toString());
+		if(StringUtil.isNullOrBlank(product.getPoid())){
+			product.setPoid("");
+		}
+		ProductInfo respObj = null;
+		try {
+			respObj = (ProductInfo)productInfoService.query(product);
+//			logger.info("查询单个物资入参信息成功"+respObj.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.info("查询单个物资信息失败");
+		}
+		JSONObject json =new JSONObject();
+		json.put("productObj", respObj);
+		response.getWriter().print(json.toString());
+		System.out.println(json.toString());
+	}
+	 
+ }

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="com.sd.farmework.mapper.SysUserRoleMapper"> 
+
+	<resultMap type="com.sd.farmework.pojo.SysUserRole" id="SysUserRoleMap"> 
+
+		<result column="USER_ID" property="userId"/>
+		<result column="ROLE_ID" property="roleId"/>
+		
+		<!-- 系统公共属性 必须按照规定存取数据start -->
+		<result column="REMARK" property="remark"/>
+		<result column="STATUS" property="status"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="CREATE_USER_ID" property="createUserId"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="CREATE_TEAM_ID" property="createTeamId"/>
+		<result column="CREATE_TEAM_NAME" property="createTeamName"/>
+		<result column="CREATE_DEPART_ID" property="createDepartId"/>
+		<result column="CREATE_DEPART_NAME" property="createDepartName"/>
+		<result column="CREATE_UNIT_ID" property="createUnitId"/>
+		<result column="CREATE_UNIT_Name" property="createUnitName"/>
+		<result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+		<result column="LAST_UPDATE_USER_ID" property="lastUpdateUserId"/>
+		<result column="LAST_UPDATE_TEAM_ID" property="lastUpdateTeamId"/>
+		<result column="LAST_UPDATE_TEAM_NAME" property="lastUpdateTeamName"/>
+		<result column="LAST_UPDATE_DEPART_ID" property="lastUpdateDepartId"/>
+		<result column="LAST_UPDATE_DEPART_NAME" property="lastUpdateDepartName"/>
+		<result column="LAST_UPDATE_UNIT_ID" property="lastUpdateUnitId"/>
+		<result column="LAST_UPDATE_UNIT_Name" property="lastUpdateUnitName"/>
+		<!-- 系统公共属性 必须按照规定存取数据end -->
+
+	</resultMap>
+	<update id="update" parameterType="com.sd.farmework.pojo.SysUserRole">
+		UPDATE SYS_USER_ROLE set 
+		t.USER_ID=#{user_id},
+		t.ROLE_ID=#{role_id},
+		t.STATUS=#{status},
+		t.CREATE_TIME=#{create_time},
+		t.CREATE_USER_ID=#{create_user_id},
+		t.CREATE_USER_NAME=#{create_user_name},
+		t.LAST_UPDATE_TIME=#{last_update_time},
+		t.LAST_UPDATE_USER_ID=#{last_update_user_id},
+		t.LAST_UPDATE_USER_NAME=#{last_update_user_name}
+		where 1=1 
+	</update>
+	<select id="queryById" parameterType="com.sd.farmework.pojo.SysUserRole"  resultMap="SysUserRoleMap">
+		SELECT 
+		t.USER_ID,
+		t.ROLE_ID,
+		t.STATUS,
+		t.CREATE_TIME,
+		t.CREATE_USER_ID,
+		t.CREATE_USER_NAME,
+		t.LAST_UPDATE_TIME,
+		t.LAST_UPDATE_USER_ID,
+		t.LAST_UPDATE_USER_NAME
+		FROM  SYS_USER_ROLE t 
+		where  1 =1 
+	</select>
+	<select id="query" parameterType="com.sd.farmework.pojo.SysUserRole"  resultMap="SysUserRoleMap">
+		SELECT 
+		t.USER_ID,
+		t.ROLE_ID,
+		t.STATUS,
+		t.CREATE_TIME,
+		t.CREATE_USER_ID,
+		t.CREATE_USER_NAME,
+		t.LAST_UPDATE_TIME,
+		t.LAST_UPDATE_USER_ID,
+		t.LAST_UPDATE_USER_NAME
+		FROM  SYS_USER_ROLE t 
+		where  1 =1 
+	</select>
+
+	<select id="queryListByPage" parameterType="com.sd.farmework.pojo.SysUserRole"  resultMap="SysUserRoleMap">
+		<![CDATA[ 
+		SELECT RW,a.*
+		FROM (
+		SELECT ROWNUM RW,
+		t.USER_ID,
+		t.ROLE_ID,
+		t.STATUS,
+		t.CREATE_TIME,
+		t.CREATE_USER_ID,
+		t.CREATE_USER_NAME,
+		t.LAST_UPDATE_TIME,
+		t.LAST_UPDATE_USER_ID,
+		t.LAST_UPDATE_USER_NAME
+		FROM  SYS_USER_ROLE t 
+ 		) a 
+		WHERE RW between #{pageSize} * (#{currPage} - 1) + 1 AND (#{pageSize} * (#{currPage} - 1)) + #{pageSize}
+		]]> 
+	</select>
+	<select id="queryList" parameterType="com.sd.farmework.pojo.SysUserRole"  resultMap="SysUserRoleMap">
+		SELECT 
+		t.USER_ID,
+		t.ROLE_ID,
+		t.STATUS,
+		t.CREATE_TIME,
+		t.CREATE_USER_ID,
+		t.CREATE_USER_NAME,
+		t.LAST_UPDATE_TIME,
+		t.LAST_UPDATE_USER_ID,
+		t.LAST_UPDATE_USER_NAME
+		FROM  SYS_USER_ROLE t 
+	</select>
+	<insert id="add" parameterType="com.sd.farmework.pojo.SysUserRole">
+	insert into SYS_USER_ROLE
+	(
+		USER_ID,
+		ROLE_ID,
+    create_user_id,
+   create_user_name,
+   create_team_id,
+   create_team_name,
+   create_depart_id,
+   create_depart_name,
+   create_unit_id,
+   create_unit_name
+	)
+	values
+	(
+		#{userId},
+		#{roleId},
+    #{createUserId},
+    #{createUserName},
+    #{createTeamId},
+    #{createTeamName},
+    #{createDepartId},
+    #{createDepartName},
+    #{createUnitId},
+    #{createUnitName}
+	)
+	</insert>
+	<delete id="delete">
+		delete from SYS_USER_ROLE where 1=2 
+	</delete>
+	<select id="queryCount"  parameterType="com.sd.farmework.pojo.SysUserRole"  resultType="java.lang.Integer">
+   		select    count(*) from SYS_USER_ROLE where 1=1
+	</select>
+</mapper> 
+

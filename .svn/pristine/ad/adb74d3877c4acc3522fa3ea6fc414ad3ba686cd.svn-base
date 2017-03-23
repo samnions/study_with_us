@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.CgOrdersInfoMapper">
+	
+	<!-- 采购订单主表 -->
+	<resultMap type="com.sd.farmework.pojo.CgOrdersInfo" id="cgOrdersMap">
+		<result column="cg_id" property="cgId"/>
+		<result column="company" property="company"/>
+		<result column="business_process" property="businessProcess"/>
+		<result column="cg_zz" property="cgZz"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="supply_shop" property="supplyShop"/>
+		<result column="purchase_person" property="purchasePerson"/>
+		<result column="purchase_team" property="purchaseTeam"/>
+		<result column="is_th" property="isTh"/>
+		<result column="order_date" property="orderDate"/>
+		<result column="batch_no" property="batchNo"/>
+		<result column="remark" property="remark"/>
+		<result column="create_user_name" property="createUserName"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_user_name" property="updateUserName"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="approven_person" property="approvenPerson"/>
+		<result column="approven_date" property="approvenDate"/>
+		<result column="approven_time" property="approvenTime"/>
+		<result column="last_update_time" property="lastUpdateTime"/>
+		<result column="order_stauts" property="orderStauts"/>
+	</resultMap>
+	<!-- 采购订单详情表  -->
+	<resultMap type="com.sd.farmework.pojo.CgOrdersInfoDetail" id="cgOrdersDetailMap">
+		<result column="detail_id" property="detailId"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="stock_no" property="stockNo"/>
+		<result column="stock_name" property="stockName"/>
+		<result column="standard" property="standard"/>
+		<result column="unit" property="unit"/>
+		<result column="num" property="num"/>
+		<result column="taxation_price" property="taxationPrice"/>
+		<result column="price" property="price"/>
+		<result column="discount_rate" property="discountRate"/>
+		<result column="amount" property="amount"/>
+		<result column="taxation_type" property="taxationType"/>
+		<result column="taxation_rate" property="taxationRate"/>
+		<result column="sum" property="sum"/>
+		<result column="create_user_name" property="createUserName"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_user_name" property="updateUserName"/>
+		<result column="update_user_id" property="updateUserId"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+	<!-- 获得采购订单 -->
+	<select id="queryList"  parameterType="com.sd.farmework.pojo.CgOrdersInfo"  resultMap="cgOrdersMap">
+		  		
+		  		SELECT *
+  				FROM (
+  						SELECT ROWNUM AS rowno, t.*
+        				  FROM CG_ORDERS_INFO t
+        				  where 1=1
+        				   <if test="orderNo!= null and orderNo != ''">
+				
+							AND order_no like '%'||#{orderNo}||'%'
+						</if>
+						<if test="orderDate!= null and orderDate != ''">
+				
+							AND order_date like '%'||#{orderDate}||'%'
+						</if>
+						<if test="purchasePerson!= null and purchasePerson != ''">
+							AND purchase_person like '%'||#{purchasePerson}||'%'
+						</if>
+							<![CDATA[ 	
+          					 and ROWNUM <= #{maxPage}
+          		 			 ) table_alias
+				
+						 WHERE table_alias.rowno >= #{index} 
+ 				 ]]>  	
+	</select>
+	<!-- 微信端获得采购订单 -->
+	<select id="weiCharQueryList"  parameterType="com.sd.farmework.pojo.CgOrdersInfo"  resultMap="cgOrdersMap">
+		  		SELECT  *
+        				  FROM CG_ORDERS_INFO 
+        				  where 1=1	
+        				 
+	</select>
+	<!-- 获得采购订单的总数量 -->
+	<select id="queryCount"  parameterType="com.sd.farmework.pojo.CgOrdersInfo"  resultType="int">
+			
+		  select count(*) from CG_ORDERS_INFO t 
+		  where 1=1
+		  <if test="orderNo!= null and orderNo != ''">
+				
+				AND order_no like '%'||#{orderNo}||'%'
+			</if>
+			<if test="orderDate!= null and orderDate != ''">
+				
+				AND order_date like '%'||#{orderDate}||'%'
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''">
+					AND purchase_person like '%'||#{purchasePerson}||'%'
+			</if>
+		  		
+		  			
+	</select>
+	<!-- 通过订单编号查询订单-->
+	<select id="queryById"  parameterType="com.sd.farmework.pojo.CgOrdersInfo"  resultMap="cgOrdersMap">
+			  select cg_id,
+				   	company,
+				   	business_process,
+				   	cg_zz,
+				   	order_no,
+				   	supply_shop,
+				   	purchase_person,
+				   	purchase_team,
+				   	is_th,
+				   	order_date,
+				   	batch_no,
+				   	remark,
+				   	create_user_name,
+				   	create_time,
+				   	update_user_name,
+				   	update_time,
+				   	approven_person,
+				   	approven_date,
+				   	approven_time,
+				   	last_update_time,
+				   	order_stauts
+					from
+		  			CG_ORDERS_INFO 
+		  			where order_no =#{orderNo}
+	</select>
+	
+	<!-- 通过订单编号查采购详情表 -->
+	<select id="queryByOrderNo"  parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail"  resultMap="cgOrdersDetailMap">
+		  	select *
+					from
+		  			cg_orders_info_detail 
+		  			where order_no =#{orderNo}
+	</select>
+	<update id="updateRkCgOrderDetailInfo" parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail">
+	
+		update cg_orders_info_detail set  
+			num= #{num}
+		 where 
+		 detail_id=#{detailId}
+	
+	</update>
+	<!-- 审核通过，修改采够订单数量 -->
+	<update id="updateNum" parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail">
+	
+		update cg_orders_info_detail set  
+			num=num - #{num}
+		 where 
+		 stock_no=#{stockNo}
+	
+	</update>
+	<!-- 修改采购订单的审核状态 -->
+	<update id="updateRkCgOrdeInfoStauts" parameterType="com.sd.farmework.pojo.CgOrdersInfo">
+	
+			update cg_orders_info set  
+			order_stauts= #{orderStauts,jdbcType=VARCHAR}
+			where 
+		    order_no=#{orderNo,jdbcType=VARCHAR}
+	
+	</update>
+	<!-- 插入采购订单基础信息 -->
+	<insert id="add" parameterType="com.sd.farmework.pojo.CgOrdersInfo">
+			INSERT INTO CG_ORDERS_INFO(
+		          CG_ID,
+		          COMPANY,
+		          BUSINESS_PROCESS,
+		          CG_ZZ,
+		          ORDER_NO,
+		          SUPPLY_SHOP,
+		          PURCHASE_PERSON,
+		          PURCHASE_TEAM,
+		          IS_TH,
+		          ORDER_DATE,
+		          BATCH_NO,
+		          REMARK,
+		          CREATE_USER_NAME,
+		          CREATE_TIME,
+		          UPDATE_USER_NAME,
+		          UPDATE_TIME,
+		          APPROVEN_PERSON,
+		          APPROVEN_DATE,
+		          APPROVEN_TIME,
+		          ORDER_STAUTS
+		      )
+		      VALUES 
+		      (
+		      CG_ORDERS_INFO_SEQ.NEXTVAL,
+		      #{company},
+		      #{businessProcess},
+		      #{cgZz},
+		      #{orderNo},   
+		      #{supplyShop},
+		      #{purchasePerson},
+		      #{purchaseTeam},
+		      #{isTh},
+		      #{orderDate},
+		      #{batchNo},
+		      #{remark},
+		      #{createUserName},
+		      sysdate,
+		       #{updateUserName},
+		      sysdate,
+		      #{approvenPerson},
+		      #{approvenDate},
+		      sysdate,
+		      #{orderStauts}
+		      )
+	
+	</insert>
+</mapper>

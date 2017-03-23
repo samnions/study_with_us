@@ -1,0 +1,132 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.RkOrdersMapper;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfoDetail;
+import com.sd.farmework.service.RkOrdersService;
+/**
+ * 出库管理
+ * @author 秦波
+ * @date:2017年1月5日 下午3:26:10
+ */
+@Service
+public class RkOrdersServiceImpl   extends BaseInfoServiceImpl  implements RkOrdersService {
+
+	private static Logger logger = Logger.getLogger(RkOrdersServiceImpl.class);
+
+	@Autowired
+	private RkOrdersMapper baseMapper;
+
+	public RkOrdersMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(RkOrdersMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List<BaseInfo> queryRKDetailList(BaseInfo obj) {
+		return this.baseMapper.queryRKDetailList(obj);
+	}
+
+	@Override
+	public String querySqe() {
+		// TODO Auto-generated method stub
+		return baseMapper.querySqe();
+	}
+
+	@Override
+	public void addRkCgOrderInfo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		baseMapper.addRkCgOrderInfo(obj);
+	}
+
+	@Override
+	public void addRkCgOrderDetailInfo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		baseMapper.addRkCgOrderDetailInfo(obj);
+	}
+
+	@Override
+	public void ckOperation(BaseInfo obj) {
+		this.baseMapper.ckOperation(obj);
+	}
+
+	@Override
+	public void ckDetailOperation(BaseInfo obj) {
+		this.baseMapper.ckDetailOperation(obj);
+	}
+
+	@Override
+	public void subnum(BaseInfo obj) {
+		this.baseMapper.subnum(obj);
+	}
+
+	@Override
+	public List<RkOrdersInfo> wxqueryList(RkOrdersInfo rkOrdersInfo) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxqueryList(rkOrdersInfo);
+	}
+
+	@Override
+	public RkOrdersInfo wxqueryRkInfoDetaillist(RkOrdersInfo rkOrdersInfo) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxqueryRkInfoDetaillist(rkOrdersInfo);
+	}
+
+	@Override
+	public List<RkOrdersInfo> queryRkInfo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryRkInfo(obj);
+	}
+
+	@Override
+	public void updateorderstatus(BaseInfo obj) {
+		this.baseMapper.updateorderstatus(obj);
+		
+	}
+
+	@Override
+	public List<RkOrdersInfoDetail> wxShqueryRkInfoDetaillist(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.wxShqueryRkInfoDetaillist(obj);
+	}
+
+	@Override
+	public RkOrdersInfo qureyOrderNo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.qureyOrderNo(obj);
+	}
+
+	@Override
+	public List<RkOrdersInfo> queryRkShenHe(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryRkShenHe(obj);
+	}
+
+	@Override
+	public Integer queryRkShenHeCount(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryRkShenHeCount(obj);
+	}
+
+	@Override
+	public Integer queryRkShenHeCounted(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryRkShenHeCounted(obj);
+	}
+
+	@Override
+	public List<RkOrdersInfo> queryRkShenHeed(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryRkShenHeed(obj);
+	}
+}

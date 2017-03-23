@@ -1,0 +1,38 @@
+$(document).ready(function() { 
+	
+	
+
+	$("#registerBtn").click(function(){
+		var aParams = document.location.search.substr(1).split("&");
+		var data={
+				accountNo:$("#accountNo").val(),
+				accountPwd:$("#accountPwd").val(),
+				url:aParams[0]
+		};
+		
+		$.ajax({ 
+            type: "POST",
+            url: "/InventoryManager/wx/userLogin.do",
+            data:data,
+            async: false,
+            dataType: "json",
+            success: function(data){
+            	if(data.code=="000"){
+            		if(data.redirect_uri!=null){
+                    	window.location=data.redirect_uri;
+                    }else{
+                    	window.location="/InventoryManager/weixin/index.html"
+                    }
+            	}    
+            },error:function(rec){
+           	      console.info("网络异常,请稍后再试");
+            }
+        });
+		
+	});
+}); 
+
+
+		
+	
+ 

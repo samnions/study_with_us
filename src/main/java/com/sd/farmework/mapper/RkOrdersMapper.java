@@ -1,0 +1,46 @@
+package com.sd.farmework.mapper;
+import java.util.List;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.BaseMapper;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfoDetail;
+/**
+ * 入库管理
+ * @author 秦波 
+ * @date:2017年1月5日 下午3:20:50
+ */
+public interface RkOrdersMapper extends BaseMapper {
+	public List<BaseInfo> queryRKDetailList(BaseInfo obj);
+	public String querySqe();
+	public void addRkCgOrderInfo(BaseInfo obj);
+	public void addRkCgOrderDetailInfo(BaseInfo obj);
+	
+
+	List<RkOrdersInfo> wxqueryList(RkOrdersInfo rkOrdersInfo);
+	RkOrdersInfo wxqueryRkInfoDetaillist(RkOrdersInfo rkOrdersInfo);
+
+	
+	public void ckOperation(BaseInfo obj);
+	
+	public void ckDetailOperation(BaseInfo obj);
+	public void subnum(BaseInfo obj);
+	List<RkOrdersInfo> queryRkInfo(BaseInfo obj);
+	List<RkOrdersInfoDetail> wxShqueryRkInfoDetaillist(BaseInfo  obj);
+	RkOrdersInfo qureyOrderNo(BaseInfo  obj);
+	public void updateorderstatus(BaseInfo obj);
+	
+	List<RkOrdersInfo> queryRkShenHe(BaseInfo obj);
+	Integer queryRkShenHeCount(BaseInfo obj);
+	
+	Integer queryRkShenHeCounted(BaseInfo obj);
+	List<RkOrdersInfo> queryRkShenHeed(BaseInfo obj);
+	
+	public void updateOrderstatusByReceiptNo(BaseInfo obj);
+	
+	List queryByReceiptNo(BaseInfo obj);
+	public void updateNum(BaseInfo obj);
+	public void updateByRecNo(BaseInfo obj);
+	RkOrdersInfo qureyInfoByReNo(BaseInfo  obj);
+	
+}

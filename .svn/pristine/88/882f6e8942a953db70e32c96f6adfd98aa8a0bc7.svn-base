@@ -1,0 +1,271 @@
+package com.sd.farmework.controller;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.common.util.SqlDateUtil;
+import com.sd.farmework.common.util.StringUtil;
+import com.sd.farmework.controller.util.JDBCPostgresqlUtil;
+import com.sd.farmework.pojo.CgOrdersInfo;
+import com.sd.farmework.pojo.CgOrdersInfoDetail;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.CkOrdersInfoDetail;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfoDetail;
+import com.sd.farmework.pojo.ProductInfo;
+import com.sd.farmework.pojo.RemoteObject;
+import com.sd.farmework.pojo.RemoteObjectDetail;
+import com.sd.farmework.service.CgOrdersInfoService;
+import com.sd.farmework.service.CkOrdersService;
+import com.sd.farmework.service.PdOrdersInfoDetailService;
+import com.sd.farmework.service.PdOrdersInfoService;
+
+import net.sf.json.JSONObject;
+
+
+
+/**
+ * 数据上传
+ * @author 王超超
+ * 2017-1-06
+ * 
+ */
+
+@Scope("prototype")
+@RequestMapping(value="/adminUtil")
+@Controller
+public class UploadDataController {
+
+	private static Logger logger = Logger.getLogger(UploadDataController.class);
+	@Autowired
+	private PdOrdersInfoService pdOrdersInfoService;
+	@Autowired
+	private PdOrdersInfoDetailService pdOrdersInfoDetailService;
+	@Autowired
+	private CkOrdersService ckOrdersService;
+	
+	/**
+	 * 数据上传
+	 * @author 王超超
+	 * @category 2017-01-16
+	 * @param flag:业务类型 1、入库；2、出库；3、盘点
+	 * @param param1:入库参数，id拼接字符串，例如：1,2,3,4
+	 * @param param2:出库参数，id拼接字符串，例如：1,2,3,4
+	 * @param param3:盘点参数，id拼接字符串，例如：1,2,3,4
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/upLoadData", method = RequestMethod.GET) 
+	public Object  upLoadData(HttpServletRequest request,String flag,String param1,String param2,String param3) throws Exception{
+		 
+		//System.out.println("初始化数据startTim="+startTime+"\t endTime="+endTime);
+		logger.info("上传数据flag="+flag);
+		Map map = new HashMap();
+		
+		
+		if("1".equals(flag)){//入库单上传
+			
+			System.out.println("入库单上传所需参数param1="+param1);
+			
+		}else if("2".equals(flag)){//出库单上传
+			
+			System.out.println("出库单上传所需参数param2="+param2);
+			
+			
+		}else if("3".equals(flag)){	//盘点单上传
+			logger.info("盘点单上传所需参数param3="+param3);
+			List pdList = new ArrayList();
+			//判断参数是否为空
+			if(!StringUtil.isNullOrBlank(param3)){
+				String[] str = param3.split(",");
+				for (int i = 0; i < str.length; i++) {
+					pdList.add(getData(str[i],"3"));
+				}
+				logger.info("盘点单完整信息查询完成pdList="+pdList.toString());
+				String result = addData("3",pdList);
+				if("success".equals(result)){
+					map.put("code", "000");
+					map.put("msg", "盘点单数据上传完毕");
+				}else{
+					map.put("code", "001");
+					map.put("msg", "盘点单数据上传失败");
+				}
+
+			}else{
+				map.put("code", "003");
+				map.put("msg", "盘点单参数错误");
+			}
+		}else{
+			map.put("code", "009");
+			map.put("msg", "上传数据类型错误");
+		}
+		return map;
+		
+	}
+	
+	/**
+	 * 获取系统数据库数据
+	 * @param id 每条数据的主键id
+	 * @param type 业务类型 1、入库；2、出库；3、盘点
+	 * @return Map<obj,List>   obj即是主表信息、List即是详情表信息,  一对多的关系，一条主表信息对应多条详情记录
+	 */
+	private Map getData(String id,String type){
+		
+		//ArrayList<ArrayList<PdOrdersInfoDetail>> queryList = new  ArrayList<ArrayList<PdOrdersInfoDetail>>();
+		
+		if("1".equals(type)){
+			
+		}else if("2".equals(type)){
+			
+			
+		}else if("3".equals(type)){
+			try {
+				PdOrdersInfo inputDto = new PdOrdersInfo();
+				inputDto.setPdId(id);
+				inputDto = (PdOrdersInfo)this.pdOrdersInfoService.queryById(inputDto);
+				logger.info("盘点单基础信息inputDto="+inputDto.toString());
+				
+				//查询流水表
+				PdOrdersInfoDetail pdDetail = new PdOrdersInfoDetail();
+				pdDetail.setPdId(inputDto.getPdId());
+				List  list = pdOrdersInfoDetailService.queryList(pdDetail);
+				logger.info("盘点单流水表信息list="+list.toString());
+				Map map3 = new HashMap();
+				map3.put(inputDto, list);
+				return map3;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 远程操作数据库保存数据
+	 * @param type 业务类型 1、入库；2、出库；3、盘点
+	 * @param paramList<Map> 封装好的集合数据
+	 * @return success表示成功；其他表示失败
+	 * @throws SQLException 
+	 */
+	private String addData(String type,List paramList) throws SQLException{
+		
+		//创建事务
+		Connection connection = JDBCPostgresqlUtil.initConfig();
+		//设置手动控制
+		connection.setAutoCommit(false);
+		
+		if("1".equals(type)){
+			
+		}else if("2".equals(type)){
+			String sql = "INSERT INTO fa_inventory(billid,billcode,startdate,checknote,billstatus,checker,checkdate,maker,makedate,updater,updatedate) "
+					+ "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+			
+			String sqlDetail = "INSERT INTO fa_inventory_b(billbid,billid,assetcode,assetname,card_num_after,checkusername,checkdate,remark) "
+					+ "VALUES (?,?,?,?,?,?,?,?)";
+			
+			logger.info("插入sql语句="+sql);
+			logger.info("插入paramList="+paramList.toString());
+			
+			
+		}else if("3".equals(type)){
+			String sql = "INSERT INTO fa_inventory(billid,billcode,startdate,checknote,billstatus,checker,checkdate,maker,makedate,updater,updatedate) "
+					+ "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+			
+			String sqlDetail = "INSERT INTO fa_inventory_b(billbid,billid,assetcode,assetname,card_num_after,checkusername,checkdate,remark) "
+					+ "VALUES (?,?,?,?,?,?,?,?)";
+			
+			logger.info("插入sql语句="+sql);
+			logger.info("插入paramList="+paramList.toString());
+			try {
+				PreparedStatement ps = connection.prepareStatement(sql);
+				PreparedStatement ps1 = connection.prepareStatement(sqlDetail);
+				//遍历数据
+				for (int i = 0; i < paramList.size(); i++) {
+					Map tmpMap = (Map)paramList.get(i);
+					Entry entry = (Entry)tmpMap.entrySet().iterator().next();
+					logger.info("key:"+entry.getKey()+" value"+entry.getValue());
+					PdOrdersInfo pdOrders = (PdOrdersInfo)entry.getKey();
+					List detailList = (List)entry.getValue();
+					logger.info("当前盘点单id="+pdOrders.getPdId());
+					
+					ps.setString(1, pdOrders.getPdId());//主键
+					ps.setString(2, pdOrders.getReceiptNo());//单据号
+					ps.setString(3, pdOrders.getInventoryDate());//盘点日期
+					ps.setString(4, pdOrders.getRemark());//盘点备注
+					ps.setString(5, pdOrders.getStatus());//状态
+					ps.setString(6, pdOrders.getApprovenPerson());//审核人
+					ps.setString(7, pdOrders.getApprovenTime());//审核日期
+					ps.setString(8, pdOrders.getCreateUserName());//制单人
+					if(StringUtil.isNullOrBlank(pdOrders.getCreateTime())){
+						ps.setString(9, "");//制单日期
+					}else{
+						ps.setString(9, pdOrders.getCreateTime().substring(0, 10));//制单日期
+					}
+					ps.setString(10, pdOrders.getLastUpdateUserName());//修改人
+					if(StringUtil.isNullOrBlank(pdOrders.getLastUpdateTime())){
+						ps.setString(11, "");//修改日期 
+					}else{
+						ps.setString(11, pdOrders.getLastUpdateTime().substring(0, 10));//修改日期 
+					}
+					
+					//遍历盘点单流水表
+					for (int j = 0; j < detailList.size(); j++) {
+						PdOrdersInfoDetail detail = (PdOrdersInfoDetail)detailList.get(j);
+						logger.info("当前盘点单id="+pdOrders.getPdId()+"\t 的盘点流水信息detail="+detail.toString());
+						
+						ps1.setString(1, detail.getDetailId());//主键
+						ps1.setString(2, detail.getPdId());//盘点单ID
+						ps1.setString(3, detail.getStockNo());//存货编码
+						ps1.setString(4, detail.getStockName());//存货名称
+						ps1.setString(5, detail.getAfterNum());//盘点数量
+						ps1.setString(6, detail.getCreateUserName());//盘点人
+						if(StringUtil.isNullOrBlank(pdOrders.getCreateTime())){
+							ps1.setString(7, "");//盘点日期
+						}else{
+							ps1.setString(7, detail.getCreateTime().substring(0, 10));//盘点日期
+						}
+						ps1.setString(8, detail.getUnit());//计量单位
+						ps1.addBatch();
+					}
+					ps.addBatch();
+				}
+				int[] tt = ps.executeBatch();
+				int[] tt1 = ps1.executeBatch();
+				logger.info("insert主表 : " + tt.length+"\t insert流水表："+tt1.length);
+				connection.commit();//提交JDBC事务
+				return "success";
+			}catch (Exception e) {
+				connection.rollback();//回滚JDBC事务
+				e.printStackTrace();
+				return "fail";
+			}finally{
+				connection.close();
+				return "fail";
+			}
+		}
+
+		return null;
+	}
+	
+	 
+ }

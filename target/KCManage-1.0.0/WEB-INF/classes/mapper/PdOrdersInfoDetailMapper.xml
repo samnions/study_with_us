@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.PdOrdersInfoDetailMapper">
+	<resultMap type="com.sd.farmework.pojo.PdOrdersInfoDetail" id="detailMap">
+	    <result column="PD_ID" property="pdId"/>
+		<result column="DETAIL_ID" property="detailId"/>
+		<result column="STOCK_NO" property="stockNo"/>
+		<result column="STOCK_NAME" property="stockName"/>
+		<result column="UNIT" property="unit"/>
+		<result column="AFTER_NUM" property="afterNum"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="CREATE_USER_ID" property="createUserId"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_USER_NAME" property="updateUserName"/>
+		<result column="UPDATE_USER_ID" property="updateUserId"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		
+	</resultMap>
+	
+	<!-- 盘点单物资信息查询 -->
+	<select id="queryList" parameterType="com.sd.farmework.pojo.PdOrdersInfoDetail"
+		resultMap="detailMap">
+		SELECT 
+		PD_ID,
+		DETAIL_ID,
+		STOCK_NO,
+		STOCK_NAME,
+		UNIT,
+		AFTER_NUM,
+		CREATE_USER_NAME,
+		CREATE_USER_ID,
+		CREATE_TIME,
+		UPDATE_USER_NAME,
+		UPDATE_USER_ID,
+		UPDATE_TIME
+		FROM 
+		PD_ORDERS_INFO_DETAIL 
+		WHERE PD_ID=#{pdId}
+	</select>
+	
+	<!-- 盘点单物资信息添加 -->
+	<insert id="add" parameterType="com.sd.farmework.pojo.PdOrdersInfoDetail">
+		INSERT INTO PD_ORDERS_INFO_DETAIL(
+		DETAIL_ID,
+		PD_ID,
+		STOCK_NO,
+		STOCK_NAME,
+		UNIT,
+		AFTER_NUM,
+		CREATE_USER_NAME,
+		CREATE_USER_ID,
+		CREATE_TIME
+		)
+		VALUES(
+		Lpad(PD_ORDERS_INFO_DETAIL_SEQ.nextval,10,'0'),
+		#{pdId},
+		#{stockNo},
+		#{stockName},
+		#{unit},
+		#{afterNum},
+		#{createUserName},
+		#{createUserId},
+		SYSDATE
+		)			
+	</insert>
+</mapper>

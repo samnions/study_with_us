@@ -1,0 +1,234 @@
+package com.sd.farmework.controller;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.common.util.StringUtil;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.CkOrdersInfoDetail;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfoDetail;
+import com.sd.farmework.service.CkOrdersService;
+import com.sd.farmework.service.RkOrdersService;
+
+
+/**
+ * 入库管理
+ * author 秦波
+ * 2017年1月5日 下午3:38:34
+ */
+
+@Controller
+@Scope("prototype")
+@RequestMapping(value="/CkAdmin")
+public class CkOrdersController {
+	private static Logger logger = Logger.getLogger(CkOrdersController.class);
+	@Autowired
+	private CkOrdersService ckorder;
+	@Autowired
+	private RkOrdersService rkorder;
+	
+	@RequestMapping(value = "/queryCkInfolist")
+	public String  querylist(Model model,CkOrdersInfo ckOrdersInfo,HttpServletRequest request){
+		String tag=request.getParameter("tag");
+		if(StringUtil.isExisted(tag, "1")){
+			
+			try {
+				ckOrdersInfo.setStatus("0");
+				int index = 0;
+				int maxPage =0;
+				index = (ckOrdersInfo.getCurrPage()-1)*ckOrdersInfo.getPageSize()+1;
+				maxPage = ckOrdersInfo.getCurrPage()*ckOrdersInfo.getPageSize();
+				ckOrdersInfo.setIndex(index);
+				ckOrdersInfo.setMaxPage(maxPage);
+				
+				int count = ckorder.queryCkShenHeCount(ckOrdersInfo);
+				
+				if(count%ckOrdersInfo.getPageSize()==0){
+					count=count/ckOrdersInfo.getPageSize();
+				}else{
+					count=count/ckOrdersInfo.getPageSize()+1;
+				}
+				List ckOrderlist = this.ckorder.queryCkShenHe(ckOrdersInfo);
+				model.addAttribute("totalCount", count);
+				model.addAttribute("currPage", ckOrdersInfo.getCurrPage());
+				model.addAttribute("ckInfo", ckOrderlist);
+				model.addAttribute("obj", ckOrdersInfo);
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return "testApproven/outboundApproven";
+			
+		}else if(StringUtil.isExisted(tag, "2")){
+			
+			try {
+				ckOrdersInfo.setStatus("1");
+				ckOrdersInfo.setStatus1("2");
+			
+				int index = 0;
+				int maxPage =0;
+				index = (ckOrdersInfo.getCurrPage()-1)*ckOrdersInfo.getPageSize()+1;
+				maxPage = ckOrdersInfo.getCurrPage()*ckOrdersInfo.getPageSize();
+				ckOrdersInfo.setIndex(index);
+				ckOrdersInfo.setMaxPage(maxPage);
+				
+				int count = ckorder.queryCkShenHeCounted(ckOrdersInfo);
+				
+				if(count%ckOrdersInfo.getPageSize()==0){
+					count=count/ckOrdersInfo.getPageSize();
+				}else{
+					count=count/ckOrdersInfo.getPageSize()+1;
+				}
+				List ckOrderlist = this.ckorder.queryCkShenHeed(ckOrdersInfo);
+				model.addAttribute("totalCount", count);
+				model.addAttribute("currPage", ckOrdersInfo.getCurrPage());
+				model.addAttribute("ckInfo", ckOrderlist);
+				model.addAttribute("obj", ckOrdersInfo);
+				
+			}
+			 catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return "testApproven/outboundApprovened";
+		}else {
+			
+			try {
+				List ckOrderlist=this.ckorder.queryList(ckOrdersInfo);
+				ckOrdersInfo.setTotalCount(ckorder.queryCount(ckOrdersInfo));
+				model.addAttribute("totalCount",ckOrdersInfo.getPageCount());
+			    model.addAttribute("currPage", ckOrdersInfo.getCurrPage());
+				model.addAttribute("ckInfo",ckOrderlist);
+				model.addAttribute("obj",ckOrdersInfo);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return "outbound/outboundlist";
+		}	
+		
+		
+	}
+	@RequestMapping(value = "/queryCkInfoDetail")
+	public String  queryCkInfoDetail(Model model,CkOrdersInfo reOrdersInfo,CkOrdersInfoDetail reOrdersInfoDetail,HttpServletRequest request){
+		String tag=request.getParameter("tag");
+		try {
+			reOrdersInfo=(CkOrdersInfo) this.ckorder.queryById(reOrdersInfo);
+			model.addAttribute("reOrdersInfo", reOrdersInfo);
+			List ckOrderMarketlist=this.ckorder.queryCKDetailList(reOrdersInfoDetail);
+			model.addAttribute("ckOrderMarket", ckOrderMarketlist);
+			model.addAttribute("obj",reOrdersInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(StringUtil.isExisted(tag, "1")){
+			return "testApproven/outboundApprovenDetail";
+			
+		}else if(StringUtil.isExisted(tag, "2")){
+			return "testApproven/outboundApprovenedDetail";
+		}else {
+			return "outbound/outboundDetail";
+		}	
+		
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/wxckqueryList")
+	public Object wxckqueryList(Model model,CkOrdersInfo reOrdersInfo) throws Exception{
+			reOrdersInfo.setPageSize((int)999999999);
+			List ckOrderlist=this.ckorder.wxckqueryList(reOrdersInfo);
+			return ckOrderlist;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/queryCkInfolistForwx")
+	public Object queryCkInfolistForwx(Model model,CkOrdersInfo reOrdersInfo) throws Exception{
+			reOrdersInfo.setPageSize((int)999999999);
+			reOrdersInfo.setStatus("2");
+			List ckOrderlist=this.ckorder.queryList(reOrdersInfo);
+			return ckOrderlist;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/queryCkInfoDetailForwx")
+	public void  queryCkInfoDetailForwx(HttpServletResponse response,Model model,CkOrdersInfo reOrdersInfo,CkOrdersInfoDetail reOrdersInfoDetail) throws Exception{
+			reOrdersInfo=(CkOrdersInfo) this.ckorder.queryById(reOrdersInfo);
+			List ckOrderMarketlist=this.ckorder.queryCKDetailList(reOrdersInfoDetail);
+			JSONObject json=new JSONObject();
+			JSONObject json2=new JSONObject();
+			JSONArray array=new JSONArray();
+			List list=new ArrayList();
+			List date=new ArrayList();
+			json.put("name", "单据号:<b>"+reOrdersInfo.getReceiptNo()+"</b>");
+			json.put("list1", JSONArray.fromObject(reOrdersInfo));
+			CkOrdersInfoDetail ckinfodetail=new CkOrdersInfoDetail();
+			for(int i=0;i<ckOrderMarketlist.size();i++){
+				ckinfodetail=(CkOrdersInfoDetail) ckOrderMarketlist.get(i);
+				if(ckinfodetail.getrealNum()!="0"){
+					date.add(ckinfodetail);
+				}
+			}
+			json.put("list", JSONArray.fromObject(date));
+			json2.put("name","单据时间:<b>"+reOrdersInfo.getReceiptDate()+"</b>");
+			json2.put("list1", list);
+			json2.put("list", list);
+			array.add(json);
+			array.add(json2);
+			response.getWriter().write(array.toString());
+	}
+	@ResponseBody
+	@RequestMapping(value = "/ckOperation")
+	public void ckOperation(HttpServletResponse response, Model model,RkOrdersInfo reOrdersInfo,RkOrdersInfoDetail reOrdersInfoDetail) throws IOException{
+		System.out.println(reOrdersInfo.getRkId());
+		try {
+			this.rkorder.ckOperation(reOrdersInfo);
+			String seq=this.ckorder.queryseq();
+			CkOrdersInfo ckinfo=new CkOrdersInfo();
+			ckinfo.setCkId(seq);
+			this.ckorder.setstatus(ckinfo);
+			response.getWriter().write(seq);
+		} catch (Exception e) {
+			response.getWriter().write("fail");
+			e.printStackTrace();
+		}
+		
+	}
+	@ResponseBody
+	@RequestMapping(value = "/addckMsg")
+	public void ckDetailOperation(Model model,HttpServletRequest request,CkOrdersInfoDetail reOrdersInfoDetail,RkOrdersInfo rkorders, RkOrdersInfoDetail rkOrdersInfoDetail){
+		try {
+			String remainnum=request.getParameter("remainnum");
+			String rkid=request.getParameter("rkId");
+			rkOrdersInfoDetail.setDetailId(reOrdersInfoDetail.getDetailId());
+			rkOrdersInfoDetail.setRealNum(remainnum);
+			reOrdersInfoDetail.setCreateUserId("000000001");
+			reOrdersInfoDetail.setCreateUserName("qinbo");
+			reOrdersInfoDetail.setLastUpdateUserId("000000001");
+			reOrdersInfoDetail.setLastUpdateUserName("qinbo");
+			this.ckorder.add(reOrdersInfoDetail);
+			this.rkorder.subnum(rkOrdersInfoDetail);
+			rkorders.setOrderStatus("N");
+			rkorders.setRkId(rkid);
+			this.rkorder.updateorderstatus(rkorders);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

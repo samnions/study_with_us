@@ -1,0 +1,36 @@
+package com.sd.farmework.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.pojo.CkOrdersInfo;
+
+/**
+ * 入库管理
+ * @author 秦波
+ * @date:2017年1月5日 下午3:22:31
+ */
+
+ 
+public interface CkOrdersService extends BaseInfoService{
+	public List<BaseInfo> queryCKDetailList(BaseInfo obj);
+	public String queryseq();
+	
+	public void setstatus(BaseInfo obj);
+	 List<CkOrdersInfo> wxckqueryList(CkOrdersInfo obj);
+	 
+	 List<CkOrdersInfo> queryCkShenHe(BaseInfo obj);
+		Integer queryCkShenHeCount(BaseInfo obj);
+		
+		Integer queryCkShenHeCounted(BaseInfo obj);
+		List<CkOrdersInfo> queryCkShenHeed(BaseInfo obj);
+		List queryCKDetailListByCkId(BaseInfo obj);
+		
+		public Map addCkApproven(HttpSession session ,HttpServletRequest request,
+				HttpServletResponse response)throws Exception;
+}

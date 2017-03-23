@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>用户信息</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/demo/demo.css">
+	
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../resources/admin/sysManage/sysUserInfo.js"></script>
+
+
+<style type="text/css">
+body{
+  padding:0px 0px 0px 0px;
+}
+
+</style>
+
+</head>
+<body>
+ 	<div class="easyui-layout" style="width:100%;height:500px;">
+  		<div data-options="region:'west',split:true" style="width:200px;">
+  			<ul id="sysdepartInfoId" class="easyui-tree" data-options="url:'../SysDepartInfo/queryList.do?state=closed1',method:'get',animate:true,checkbox:false"></ul>
+  		</div>
+		<div data-options="region:'center',iconCls:'icon-ok'"  >
+		<form id="form1" method="post" >
+		
+		<input type="hidden"    name="unitId"   id="unitId">
+			<input type="hidden"    name="unitName" id="unitName">
+			
+			<input type="hidden"    name="departId"  id="departId">
+			<input type="hidden"    name="departName" id="departName">
+			
+			<input type="hidden"    name="teamId" id="teamId">
+			<input type="hidden"    name="teamName" id="teamName">
+	    <input type="hidden" value="unit" name="type">
+	           <input type="hidden" value="${roleId}" >
+	    	<table cellpadding="5">
+	    	<tr>
+	    		<tr>
+	    			<td>姓名:</td>
+	    			<td><input class="easyui-textbox" type="text"  value="" name="userName" data-options="required:true"></input></td>
+	    		</tr>
+	    			    		<tr>
+	    			<td>所属部门</td>
+	    			<td id="depart"></td>
+	    		</tr>
+	    		<tr>
+	    			<td>登录名:</td>
+	    			<td><input class="easyui-textbox" value="" type="text" name="loginName" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>密码:</td>
+	    			<td><input class="easyui-textbox" value="" type="password" name="loginPwd" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="status">
+	    					<option value="Y">启用</option>
+	    					<option value="N">禁用</option>
+	    				</select>
+	    			</td>
+	    		</tr>
+	    	</table>
+	    </form>
+	    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+	    </div>
+			</div>
+ 
+</body>
+</html>
+
+<script type="text/javascript" >
+function submitForm(){
+	 
+	$.ajax({
+        cache: true,
+        type: "POST",
+        url:"../SysUserInfo/add.do",
+        data:$('#form1').serialize(),// 你的formid
+        async: false,
+        error: function(request) {
+            alert("Connection error");
+        },
+        success: function(data) {
+           if(JSON.parse(data).code=="000"){
+        	   alert("角色信息保存成功 ！");
+        	   window.close();
+        	   window.opener.document.getElementsByName("right")[0].src="../SysRoleInfo/queryListIndex.do";
+           }
+        }
+    });
+} 
+
+	function clearForm(){
+		$('#ff').form('clear');
+	}
+
+</script>

@@ -1,0 +1,5 @@
+jndiName=java:comp/env/kc57
+serverDomain =http://crm.cnictt.cn
+serverName =InventoryManager
+
+ 

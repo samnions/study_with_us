@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	
+	
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<title></title>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script src="../resources/weixin/js/zepto.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <script src="../resources/weixin/js/example.js"></script>
+<style type="text/css">
+		body{
+			background: #EFEFF4;
+		}
+    	.fontsize{
+    		font-size: 13px;
+    	}
+    	.content{
+    		 background-color:#FFF; width: 100%;height: 20%;
+    		 border-bottom: 0.1px solid #d9d9d9;
+    		margin-bottom: 10px;
+    	}
+    	.date{
+    		width: 69%;height: 100%;float: left;
+    	}
+    	.btn{
+    		width: 29%;height: 100%;float: left;
+    	}
+    	.item{
+    		width: 100%;height: 25%;
+    	}
+    	.item .pra_name{
+    		width: 40%;height: 100%;
+    		text-align: right;
+    		float:left;
+    		font-size:16px;
+    		font-family:微软雅黑;
+    	}
+    	.item .pra_date{
+    		width: 55%;height: 100%;
+    		text-align: left;
+    		float:left;
+    		font-size:14px;
+    		font-family:微软雅黑;
+    	}
+    	.btn_item{
+    		 width: 100%;height: 48%;text-align: center;
+    		 margin-top: 10px;
+    	}
+    	.hader{
+	    	width: 100%;
+	    	text-align: center;
+	    	background-color: #fff;
+	    	height: 40px;
+	    	font-family: 微软雅黑;
+    	}
+    	.hader span{
+	    	position: absolute;
+    		top:5px;
+    		left:40%;
+    	}
+    	#reback{
+    		position: absolute;
+    		top:5px;
+    		left:15px;
+    	}
+    	#showfind{
+    		position: absolute;
+    		top:5px;
+    		right:15px;
+    	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		sessionStorage.panDuan="1";
+		var i=0;
+		$("#showfind").click(function (){
+			if(i%2==0){
+				$("#barspace").hide();
+				$("#searchBar").show();
+			}else{
+				$("#barspace").show();
+				$("#searchBar").hide();
+			}
+			i++;
+		});
+			var url="../RkAdmin/queryRkInfolistForwx.do";
+			$.ajax({
+			    url:url,
+			    success:function(req){
+					for(var i=0;i<req.length;i++){
+						var ckdate="";
+						if(req[i].orderStatus=="Y"){
+							ckdate="<div class='content'><div class='date'><div class='item'><div class='pra_name'><b>入库单号：</b></div><div class='pra_date'><span>"+req[i].receiptNo+"</span></div></div><div class='item'><div class='pra_name'><b class='fontsize'>采购单号：</b></div><div class='pra_date'><span class='fontsize' style='color: red;'>"+req[i].orderNo+"</span></div></div><div class='item'><div class='pra_name'><span class='fontsize'>出库状态：</span></div><div class='pra_date'><span class='fontsize'>可出库</span></div></div><div class='item'><div class='pra_name'><span class='fontsize'>入库时间：</span></div><div class='pra_date'><span class='fontsize'>"+req[i].createTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='findrkdetail.html?rkId="+req[i].rkId+"' class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div><div class='btn_item'><div><a href='findlistdetail.html?rkId="+req[i].rkId+"&orderStatus="+req[i].orderStatus+"'  class='weui-btn weui-btn_mini weui-btn_primary'>出库</a></div></div></div></div>";
+						}else if(req[i].orderStatus=="N"){
+							ckdate="<div class='content'><div class='date'><div class='item'><div class='pra_name'><b>入库单号：</b></div><div class='pra_date'><span>"+req[i].receiptNo+"</span></div></div><div class='item'><div class='pra_name'><b class='fontsize'>采购单号：</b></div><div class='pra_date'><span class='fontsize' style='color: red;'>"+req[i].orderNo+"</span></div></div><div class='item'><div class='pra_name'><span class='fontsize'>出库状态：</span></div><div class='pra_date'><span class='fontsize'>正在审核</span></div></div><div class='item'><div class='pra_name'><span class='fontsize'>入库时间：</span></div><div class='pra_date'><span class='fontsize'>"+req[i].createTime+"</span></div></div></div><div class='btn'><div class='btn_item'><div><a href='findrkdetail.html?rkId="+req[i].rkId+"' class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div><div class='btn_item'><div></div></div></div></div>";
+						}
+						$("#content").append(ckdate);
+					}
+			    },
+			    error:function(err){
+					alert("数据异常");
+			    }
+			});
+		}
+	);
+</script>
+</head>
+<body>
+		<div class="hader"><a href="../weixin/outwarehouselist.html" id="reback"><img src="../resources/images/icon_back.png" style="width: 25px;height: 25px;"></a><span>选择入库单</span><!-- <div id="showfind"><img src="../resources/images/icon_serch.png" style="width: 23px;height: 23px;"></div> --></div>
+		<div style="width: 100%;height: 10px; background: #EFEFF4;" id="barspace"></div>
+		<!-- <div class="weui-search-bar" id="searchBar" style="display: none;">
+		            <form id="search" class="weui-search-bar__form" style="margin-top: 1px;">
+		                <div class="weui-search-bar__box">
+		                    <i class="weui-icon-search"></i>
+		                    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required/>
+		                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+		                </div>
+		                <label class="weui-search-bar__label" id="searchText">
+		                    <i class="weui-icon-search"></i>
+		                    <span>搜索</span>
+		                </label>
+		            </form>
+		            <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+		  </div> -->
+		<div class="page__bd" style="height: 100%;">
+		  
+		  <div class="weui-tab__panel" id="content">
+	      </div>	
+	    </div>
+		
+</body>
+				<script type="text/javascript">
+				    $(function(){
+				        var $searchBar = $('#searchBar'),
+				            $searchResult = $('#searchResult'),
+				            $searchText = $('#searchText'),
+				            $searchInput = $('#searchInput'),
+				            $searchClear = $('#searchClear'),
+				            $searchCancel = $('#searchCancel');
+				
+				        function hideSearchResult(){
+				            $searchResult.hide();
+				            $searchInput.val('');
+				        }
+				        function cancelSearch(){
+				            hideSearchResult();
+				            $searchBar.removeClass('weui-search-bar_focusing');
+				            $searchText.show();
+				        }
+				
+				        $searchText.on('click', function(){
+				            $searchBar.addClass('weui-search-bar_focusing');
+				            $searchInput.focus();
+				        });
+				        $searchInput
+				            .on('blur', function () {
+				                if(!this.value.length) cancelSearch();
+				            })
+				            .on('input', function(){
+				                if(this.value.length) {
+				                    $searchResult.show();
+				                } else {
+				                    $searchResult.hide();
+				                }
+				            })
+				        ;
+				        $searchClear.on('click', function(){
+				            hideSearchResult();
+				            $searchInput.focus();
+				        });
+				        $searchCancel.on('click', function(){
+				            cancelSearch();
+				            $searchInput.blur();
+				        });
+				    });
+				</script>
+</html>

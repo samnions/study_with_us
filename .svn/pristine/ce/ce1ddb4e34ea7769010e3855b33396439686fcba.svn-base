@@ -1,0 +1,134 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.sd.farmework.common.ApprovenUtil;
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.mapper.PdOrdersInfoMapper;
+import com.sd.farmework.mapper.SysApprovenFunctionRuleMapper;
+import com.sd.farmework.mapper.SysApprovenRulePersonMapper;
+import com.sd.farmework.mapper.SysApprovenTaskMapper;
+import com.sd.farmework.mapper.SysApprovenTaskedMapper;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfoDetail;
+import com.sd.farmework.pojo.SysApprovenTask;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.service.PdOrdersInfoDetailService;
+import com.sd.farmework.service.PdOrdersInfoService;
+
+public class PdOrdersInfoServiceImpl extends BaseInfoServiceImpl implements
+		PdOrdersInfoService {
+	@Autowired
+	private SysApprovenRulePersonMapper ruleMapper;
+	@Autowired
+	private SysApprovenTaskMapper sysApprovenTaskMapper;
+	@Autowired
+	private SysApprovenTaskedMapper sysApprovenTaskedMapper;
+	@Autowired
+	private SysApprovenFunctionRuleMapper sysApprovenFunctionRuleMapper;
+	@Autowired
+	PdOrdersInfoDetailService pdOrdersInfoDetailService;
+	@Autowired
+	private PdOrdersInfoMapper baseMapper;
+
+	public PdOrdersInfoMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(PdOrdersInfoMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List wxqueryList(PdOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.wxqueryList(obj);
+	}
+
+	@Override
+	public String querySeq() {
+		// TODO Auto-generated method stub
+		return baseMapper.querySeq();
+	}
+
+	@Override
+	public List wxqueryListpd(PdOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxqueryListpd(obj);
+	}
+
+	@Override
+	public List<PdOrdersInfo> queryPdShenHe(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHe(obj);
+	}
+
+	@Override
+	public Integer queryPdShenHeCount(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHeCount(obj);
+	}
+
+	@Override
+	public Integer queryPdShenHeCounted(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHeCounted(obj);
+	}
+
+	@Override
+	public List<PdOrdersInfo> queryPdShenHeed(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return  this.baseMapper.queryPdShenHeed(obj);
+	}
+
+	@Override
+	public Map addPdApproven(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		
+		String approvenFunctionId = (String)request.getAttribute("approvenFunctionId");
+		
+		PdOrdersInfo obj = (PdOrdersInfo)request.getAttribute("obj");
+		this.baseMapper.add(obj);
+		
+		PdOrdersInfoDetail detail = (PdOrdersInfoDetail) request.getAttribute("detail");
+		detail.setPdId(this.baseMapper.querySeq());
+		
+		this.pdOrdersInfoDetailService.add(detail);
+		
+		HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		
+		SysUserInfo sessionUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		
+		obj=(PdOrdersInfo) httpSessionProvider.fillBaseInfo(obj, sessionUserInfo);
+		 
+		//审批开始
+		 //sys_approven_task
+		 SysApprovenTask sysTaskP =new SysApprovenTask();
+		 //任务名称
+		 sysTaskP.setTaskName("盘点审核");
+		 //业务表名
+		 sysTaskP.setSourceTable("PD_ORDERS_INFO");
+		 //业务表主键名称
+		 sysTaskP.setSourceTablePkColumnName("PD_");
+		 //业务表主键对应值
+		 sysTaskP.setSourceTablePkColumnValue(detail.getPdId());
+		 //审批工具类
+		 ApprovenUtil appr = new ApprovenUtil();
+		 //请假调休审批 0000000001 sys_approven_function_rule
+		 sysTaskP = (SysApprovenTask) httpSessionProvider.fillBaseInfo(sysTaskP, sessionUserInfo);
+		 Map map= appr.addApprovenTask(session, request, response, approvenFunctionId,sysTaskP,sysApprovenTaskMapper,ruleMapper,sysApprovenFunctionRuleMapper);
+		 if(!map.get("code").equals("000")){
+			 throw new Exception(map.get("code").toString());
+		 }
+		 return map;
+	}
+	
+}

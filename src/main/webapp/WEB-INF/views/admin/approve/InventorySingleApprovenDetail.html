@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="../resources/css/pintuer.css">
+<link rel="stylesheet" href="../resources/css/admin.css">
+<link type="text/css" rel="stylesheet"
+	href="../resources/css/bootstrap.min.css" />
+<script src="../resources/js/jquery.min.js"></script>
+<script src="../resources/js/pintuer.js"></script>
+<link rel="stylesheet" href="../resources/css/content.css" />
+<script src="../resources/js-date/WdatePicker.js"></script>
+<script src="../resources/js/checkAll.js"></script>
+<script type="text/javascript"
+	src="../resources/js/jqPaginator.js"></script>
+<style>
+.pagination > li {
+    display:inline-block;
+}
+  .search_lab{
+  overflow:inherit;
+  float:left;
+  width:90px;
+  text_align:center;
+  margin-top:23px;
+  margin-left:10px;
+  }
+  .search_txt{
+  float:left;
+  margin-top:15px;
+  }
+  .body-content {
+    padding: 0;
+    overflow: hidden;
+}
+
+.white_content {
+	display: none;
+	width: 50%;
+	border: 12px solid #D6E9F1;
+	z-index: 1002;
+	width: 50%;
+	height: 85%;
+	left: 25%;
+	top: 25%;
+	background-color: #fff;
+	margin-left: -168px;
+	margin-top: -140px;
+	position: fixed;
+	margin-left: -168px;
+}
+
+.black_overlay {
+	display: none;
+	background-color: #f5f5f5;
+	z-index: 1001;
+	-moz-opacity: 0.8;
+	opacity: .80;
+	filter: alpha(opacity =                   80);
+	width: 100%;
+	height: 100%;
+	left: 0%;
+	top: 0%;
+	right: 0%;
+	bottom: 0%;
+	position: fixed;
+}
+
+.close {
+	float: right;
+	clear: both;
+	width: 100%;
+	text-align: right;
+	margin: 0 0 6px 0
+}
+
+.close a {
+	color: #333;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 700
+}
+
+#con {
+	text-indent: 1.5pc;
+	line-height: 21px
+}
+
+#con .label {
+	width: 35%;
+}
+.wangzuo{
+	color: #000;
+	width:90%;
+
+}
+.title1{
+ 
+	margin-top: 15px;
+}
+</style>
+</head>
+<body >
+	<div class="panel admin-panel">
+		<div class="panel-head" id="add">
+			<strong><span class="icon-pencil-square-o"></span>
+			盘点单基础信息
+			</strong>
+		</div>
+		<div class="body-content">
+				<div class="form-x">
+				<div class="form-group" style="margin-left:100px;">
+					<div class="label">
+						<label class="title1">单据号：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.receiptNo}<"/>
+					</div>
+					<div class="label">
+						<label class="title1">单据日期：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.receiptDate}"/>
+					</div>
+					<div class="label">
+						<label class="title1">盘点日期：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.inventoryDate}"/>
+					</div>
+					
+				</div>
+				
+				<div class="form-group" style="margin-left:100px;">
+				   <div class="label">
+						<label class="title1">仓库：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.warehouse}"/>
+					</div>
+					<div class="label">
+						<label class="title1">部门：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.department}"/>
+					</div>
+					<div class="label">
+						<label class="title1">库管员：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.stockManager}"/>
+					</div>
+					
+				</div>
+				
+				<div class="form-group" style="margin-left:100px;">
+				   <div class="label">
+						<label class="title1">盘点人：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.inventoryPerson}"/>
+					</div>
+					<div class="label">
+						<label class="title1">备注：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.remark}"/>
+					</div>
+					<div class="label">
+						<label class="title1">条形码：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.barCode}"/>
+					</div>
+					
+				</div>
+				
+				
+				<div class="form-group" style="margin-left:100px;">
+				  <div class="label">
+						<label class="title1">最高库存：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.maxStock}"/>
+					</div>
+					<div class="label">
+						<label class="title1">最低库存：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.minStock}"/>
+					</div>
+					<div class="label">
+						<label class="title1">安全库存：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.securityStock}"/>
+					</div>
+					
+				</div>
+				
+				
+				
+				<div class="form-group" style="margin-left:100px;">
+				    
+					<div class="label">
+						<label class="title1">调整人：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.adjustPerson}"/>
+					</div>
+					<div class="label">
+						<label class="title1">制单人：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.createUserName}"/>
+					</div>
+					<div class="label">
+						<label class="title1">再订购点：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.reorderPoint}"/>
+					</div>
+					
+					
+				</div>
+			<div class="form-group" style="margin-left:100px;">
+				 <div class="label">
+						<label class="title1">打印次数：</label>
+					</div>
+					<div class="label" id="m">
+						<input type="text" class="input wangzuo" disabled="disabled" value="${PO.printNum}"/>
+					</div>
+				</div>
+				
+				
+			</div>	
+		</div>
+		<div style="overflow: scroll; width: 100%; height: 350px;">
+				<table class="table table-hover text-center">
+					<tr>
+						<th colspan="20" style="text-align: left; padding-left: 10px;">物资信息</th>
+					</tr>
+					<tr>
+						<th>存货编码</th>
+						<th>存货名称</th>
+						<th>计量单位</th>
+						<th>盘点数量</th>
+					</tr>
+					<#list Detaillist as list>
+                    <tr>
+						<td>${list.stockNo}</td>
+						<td>${list.stockName}</td>
+						<td>${list.unit}</td>
+						<td>${list.afterNum}</td>
+					</tr>
+				   </#list>
+				</table>
+				
+			
+					
+				<div class="field" style="text-align:left;margin-left:500px;margin-top:50px;">
+				   <a class="button bg-main" href="../Inventory/InventorySinglelist.do?tag=1&status=0">返回</a>
+				</div>
+		
+			
+		</div>
+			
+			
+	</div>
+
+	
+</body>
+</html>

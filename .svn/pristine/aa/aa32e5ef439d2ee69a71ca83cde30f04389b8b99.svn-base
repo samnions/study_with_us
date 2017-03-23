@@ -1,0 +1,290 @@
+package com.sd.farmework.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.common.util.StringUtil;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfoDetail;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.SysApprovenTask;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.service.PdOrdersInfoDetailService;
+import com.sd.farmework.service.PdOrdersInfoService;
+import com.sd.farmework.service.SysApprovenTaskService;
+
+@Controller
+@Scope("prototype")
+@RequestMapping(value = "/Inventory")
+public class InventorySingleController {
+
+	@Autowired
+	private PdOrdersInfoService pdOrdersInfoService;
+	@Autowired
+	private PdOrdersInfoDetailService pdOrdersInfoDetailService;
+	@Autowired
+	private SysApprovenTaskService sysApprovenTaskService;
+	
+	private String approvenFunctionId="00003";
+	
+	/**
+	 * 盘点单列表
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/InventorySinglelist", method = RequestMethod.GET)
+	public String InventorySinglelist(HttpSession session,HttpServletResponse response,PdOrdersInfo obj ,Model model,HttpServletRequest request) throws Exception {
+		
+		HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		 SysUserInfo sessionUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		 obj=(PdOrdersInfo) httpSessionProvider.fillBaseInfo(obj, sessionUserInfo);
+
+		
+		String tag=request.getParameter("tag");
+		if(StringUtil.isExisted(tag, "1")){
+			try {
+				obj.setStatus("0");
+				int index = 0;
+				int maxPage =0;
+				index = (obj.getCurrPage()-1)*obj.getPageSize()+1;
+				maxPage = obj.getCurrPage()*obj.getPageSize();
+				obj.setIndex(index);
+				obj.setMaxPage(maxPage);
+				
+				int count = pdOrdersInfoService.queryPdShenHeCount(obj);
+				
+				if(count%obj.getPageSize()==0){
+					count=count/obj.getPageSize();
+				}else{
+					count=count/obj.getPageSize()+1;
+				}
+				List list = this.pdOrdersInfoService.queryPdShenHe(obj);
+				model.addAttribute("totalCount", count);
+				model.addAttribute("currPage", obj.getCurrPage());
+				model.addAttribute("Orderlist", list);
+				model.addAttribute("obj", obj);
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return "testApproven/InventoryApproven";
+		}else if(StringUtil.isExisted(tag, "2")){
+			
+			try {
+				obj.setStatus("1");
+				obj.setStatus1("2");
+			
+				int index = 0;
+				int maxPage =0;
+				index = (obj.getCurrPage()-1)*obj.getPageSize()+1;
+				maxPage = obj.getCurrPage()*obj.getPageSize();
+				obj.setIndex(index);
+				obj.setMaxPage(maxPage);
+				
+				int count = pdOrdersInfoService.queryPdShenHeCounted(obj);
+				
+				if(count%obj.getPageSize()==0){
+					count=count/obj.getPageSize();
+				}else{
+					count=count/obj.getPageSize()+1;
+				}
+				List list = this.pdOrdersInfoService.queryPdShenHeed(obj);
+				model.addAttribute("totalCount", count);
+				model.addAttribute("currPage", obj.getCurrPage());
+				model.addAttribute("Orderlist", list);
+				model.addAttribute("obj", obj);
+				
+			}
+			 catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return "testApproven/InventoryApprovened";
+		}else{
+			List list=this.pdOrdersInfoService.queryList(obj);
+			model.addAttribute("Orderlist",list);
+			obj.setTotalCount(this.pdOrdersInfoService.queryCount(obj));
+			model.addAttribute("totalCount", obj.getPageCount());
+			model.addAttribute("currPage", obj.getCurrPage());
+			model.addAttribute("obj", obj);
+			return "inventorySingle/inventorySinglelist";
+		}
+		
+		
+	
+		
+		
+		
+	}
+
+	/**
+	 * 盘点单列表详情
+	 */
+	@RequestMapping(value = "/InventorySingleDetail", method = RequestMethod.GET)
+	public String InventorySingleDetail(SysApprovenTask sys,PdOrdersInfo obj ,PdOrdersInfoDetail detail, Model model,HttpServletRequest request) {
+		String tag=request.getParameter("tag");
+		try {
+    	   
+			model.addAttribute("PO", this.pdOrdersInfoService.queryById(obj));
+			sys.setApprovenFunctionId(approvenFunctionId);
+			sys.setSourceTablePkColumnValue(obj.getPdId());
+			List<BaseInfo> list1=sysApprovenTaskService.queryAllApprovenTaskList(sys);
+			model.addAttribute("testList", list1);
+			List list=this.pdOrdersInfoDetailService.queryList(detail);
+			model.addAttribute("Detaillist", list);
+			model.addAttribute("obj", obj);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+     if(StringUtil.isExisted(tag, "1")){
+    	 return "testApproven/InventorySingleApprovenDetail";
+     }else if(StringUtil.isExisted(tag, "2")){
+    	 return "testApproven/InventorySingleApprovenedDetail";}
+     else{
+		return "inventorySingle/inventorySingleDetail";}
+	}
+	
+	/**
+	 * 盘点单上传
+	 */
+	@RequestMapping(value = "/upInventorySingle", method = RequestMethod.GET)
+	public String upInventorySingle(Model model) {
+
+		return "redirect:InventorySinglelist.do";
+	}
+	
+	
+	
+	
+	/**
+	 * 微信盘点单列表
+	 * @throws Exception 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/wxInventorySinglelist")
+	public Object wxInventorySinglelist(PdOrdersInfo obj ,Model model,HttpServletResponse response,HttpSession session,HttpServletRequest request) throws Exception {
+		
+		HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		 SysUserInfo sessionUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		 obj=(PdOrdersInfo) httpSessionProvider.fillBaseInfo(obj, sessionUserInfo);
+
+		Map map=new HashMap();
+		try {
+		List list=this.pdOrdersInfoService.wxqueryList(obj);
+		map.put("wxlist", list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
+		
+	}
+	
+	
+	/**
+	 * 微信审核盘点单列表
+	 * @throws Exception 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/wxInventorySinglelistpd")
+	public Object wxInventorySinglelistpd(PdOrdersInfo obj ,Model model) throws Exception {
+		Map map=new HashMap();
+		try {
+		List list=this.pdOrdersInfoService.wxqueryListpd(obj);
+		map.put("wxlist", list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
+		
+	}
+	
+	/**
+	 * 微信盘点单列表详情
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/wxInventorySingleDetail")
+	public Object wxInventorySingleDetail(PdOrdersInfo obj ,PdOrdersInfoDetail detail,SysApprovenTask sys, Model model) {
+		Map map=new HashMap();
+		try {
+			List list=this.pdOrdersInfoDetailService.queryList(detail);
+			map.put("WXDetaillist", list);
+			map.put("WXPO", this.pdOrdersInfoService.queryById(obj));
+			sys.setApprovenFunctionId(approvenFunctionId);
+			sys.setSourceTablePkColumnValue(obj.getPdId());
+			List<BaseInfo> list1=sysApprovenTaskService.queryAllApprovenTaskList(sys);
+			map.put("wxtestList", list1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 盘点单添加
+	 * @throws Exception 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/inventoryAdd", method = RequestMethod.GET)
+	public void inventoryAdd(HttpSession session, HttpServletResponse resposne,PdOrdersInfo obj ,PdOrdersInfoDetail detail,Model model, HttpServletRequest request) throws Exception {
+		SysUserInfo userinfo = (SysUserInfo)request.getSession().getAttribute("wxLoginUser");
+		Date dt=new Date();
+		SimpleDateFormat matter1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    String dataNo = String.valueOf(System.currentTimeMillis());
+	    obj.setReceiptNo(dataNo);
+		obj.setReceiptDate(matter1.format(dt));
+		obj.setInventoryDate(matter1.format(dt));
+		obj.setWarehouse("11");
+		obj.setDepartment("wq");
+		obj.setStockManager("zcq");
+		obj.setAdjustPerson("zcq");
+		obj.setMaxStock("");
+		obj.setMinStock("");
+		obj.setSecurityStock("");
+		obj.setReorderPoint("");
+		obj.setPrintNum("");
+		obj.setBarCode("");
+		obj.setCreateUserId("1");
+		obj.setCreateUserName("zcq");
+		obj.setCreateDepartId("");
+		obj.setCreateDepartName("");
+		obj.setCreateTeamId("");
+		obj.setCreateTeamName("");
+		obj.setCreateUnitId("");
+		obj.setCreateUnitName("");
+		
+		request.setAttribute("obj", obj);
+		
+		detail.setCreateUserId("1");
+		detail.setCreateUserName("zcq");
+		request.setAttribute("detail",detail);
+		request.setAttribute("approvenFunctionId",approvenFunctionId);
+		//开启审核流程
+		pdOrdersInfoService.addPdApproven(session, request, resposne);
+		
+	}
+}

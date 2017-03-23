@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.CgOrdersDetailMapper">
+	<!-- 采购订单详情表  -->
+	<resultMap type="com.sd.farmework.pojo.CgOrdersInfoDetail" id="restCgOrdersDetailMap">
+		<result column="detail_id" property="detailId"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="stock_no" property="stockNo"/>
+		<result column="stock_name" property="stockName"/>
+		<result column="standard" property="standard"/>
+		<result column="unit" property="unit"/>
+		<result column="num" property="num"/>
+		<result column="taxation_price" property="taxationPrice"/>
+		<result column="price" property="price"/>
+		<result column="discount_rate" property="discountRate"/>
+		<result column="amount" property="amount"/>
+		<result column="taxation_type" property="taxationType"/>
+		<result column="taxation_rate" property="taxationRate"/>
+		<result column="sum" property="sum"/>
+		<result column="create_user_name" property="createUserName"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_user_name" property="lastUpdateUserName"/>
+		<result column="update_user_id" property="lastUpdateUserId"/>
+		<result column="update_time" property="lastUpdateTime"/>
+	</resultMap>
+	<!-- 微信端获得采购订单 -->
+	<select id="queryList"  parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail"  resultMap="restCgOrdersDetailMap">
+		  		SELECT  D.ORDER_NO,SUM(D.NUM) AS NUM
+        		FROM CG_ORDERS_INFO_DETAIL D
+				GROUP BY D.ORDER_NO	 
+	</select>	
+	
+	<!-- 插入采购订单详情信息 -->
+	<insert id="add" parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail">
+			INSERT INTO CG_ORDERS_INFO_DETAIL(
+              DETAIL_ID,
+              ORDER_NO,
+              STOCK_NO,
+              STOCK_NAME,
+              STANDARD,
+              UNIT,
+              NUM,
+              TAXATION_PRICE,
+              PRICE,
+              DISCOUNT_RATE,
+              AMOUNT,
+              TAXATION_TYPE,
+              TAXATION_RATE,
+              SUM,
+              CREATE_USER_NAME,
+              CREATE_USER_ID,
+              CREATE_TIME,
+              UPDATE_USER_NAME,
+              UPDATE_USER_ID,
+              UPDATE_TIME
+          )
+          VALUES 
+          (
+          CG_ORDERS_INFO_DETAIL_SEQ.NEXTVAL,
+          #{orderNo},
+          #{stockNo},
+          #{stockName},
+          #{standard},   
+          #{unit},
+          #{num},
+          #{taxationPrice},
+          #{price},
+          #{discountRate},
+          #{amount},
+          #{taxationType},
+          #{taxationRate},
+          #{sum},
+           #{createUserName},
+           #{createUserId},
+          sysdate,
+          #{lastUpdateUserName},
+          #{lastUpdateUserId},
+          sysdate
+          )
+
+	</insert>
+</mapper>

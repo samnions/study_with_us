@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link type="text/css" rel="stylesheet" href="../resources/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="../resources/css/reset.css" />
+<link rel="stylesheet" href="../resources/css/content.css" />
+<link rel="stylesheet" href="../resources/css/pintuer.css">
+<link rel="stylesheet" href="../resources/css/admin.css">
+<script src="../resources/js/jquery.min.js"></script>
+<script src="../resources/js/pintuer.js"></script>
+</head>
+<body>
+ 
+  <div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder">员工列表<a href="../approvenTestIndex.html">首页</a></strong> <a href="" style="float:right; display:none;">添加字段</a></div>
+   　
+    <table class="table table-hover text-center">
+      <tr>
+        <th width="100" style="text-align:left; padding-left:20px;">ID</th>
+        <th width="10%">请假人姓名</th>
+        <th>单位</th>
+        <th>部门</th>
+        <th>班组</th>
+        <th width="10%">请假类型</th>
+        <th>请假原因</th>
+        <th>创建时间</th>
+        <th>状态</th>
+        <th width="310">操作</th>
+      </tr>
+      
+	      <#list testList as list>
+	      	<tr>
+	          <td style="text-align:left; padding-left:20px;">${list_index+1}</td>
+	          <td>${list.createUserName}</td>
+	          <td>${list.createUnitName}</td>
+	           <td>${list.createDepartName}</td>
+	           <td>${list.createTeamName}</td>
+	           <td>${list.testName}</td>
+	          <td>${list.testRemark}</td>
+	          <td>${list.step}</td>
+	          <td>${list.createTime}</td>
+	           <td>
+		        <a href="../approven/dataApprovenDetailList.do?sourceTablePkColumnValue=${list.testId}" class="button border-red" style="padding:5px 15px;" > 
+		        	审核详情
+		        </a>
+	       	</td>
+　	        </tr>
+	      </#list>
+        
+         
+        
+        
+     	
+    </table>
+      
+  </div>
+ 
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+package com.sd.farmework.filter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.sd.farmework.common.HttpSessionProvider;
+
+public class LoginFilter implements Filter {
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+        // 获得在下面代码中要用的request,response,session对象
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        HttpServletResponse servletResponse = (HttpServletResponse) response;
+        HttpSession session = servletRequest.getSession();
+        // 获得用户请求的URI
+        String path = servletRequest.getRequestURI();
+        // 从session里取员工工号信息
+        Object obj=session.getAttribute(HttpSessionProvider.CURRENT_USER_SESSION_KEY);
+        List<String> paths =new  ArrayList<String>();
+        paths.add("login.html");
+        paths.add("/resources/");
+        paths.add("SysUserInfo/query.do");
+        paths.add("weixin/");
+        //创建类Constants.java，里面写的是无需过滤的页面
+        for (int i = 0; i < paths.size(); i++) {
+
+            if (path.indexOf(paths.get(i)) > -1) {
+                chain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+        } 
+        
+        // 登陆页面无需过滤
+        if (obj == null) { 
+        	 if(path.indexOf("/weixin/")==-1){
+	           // 跳转到登陆页面
+	           servletResponse.sendRedirect(servletRequest.getContextPath()+"/login.html");
+	           PrintWriter out = response.getWriter();
+	           String url = servletRequest.getContextPath() + "/login.html";
+	           out.println("<script language=\"javascript\">");//利用js跳出iframe。
+	           out.println("top.location=\"" + url + "\";");
+	           out.println("</script>");
+        	 }
+       } 
+        if(path.indexOf("/weixin/")>-1){
+	        
+	        Map<String, String> map = new HashMap<String, String>();
+			map.put("/rk", "storage.html");
+			map.put("/ck", "outwarehouselist.html");
+			map.put("/pd", "inventory.html");
+			map.put("/sh", "waitTask.html");
+			map.put("/sys", "");
+			
+			StringBuffer urlPath = new StringBuffer();
+			for (String key : map.keySet()) {
+				if (path.indexOf(key) > -1) {
+						urlPath.append(servletRequest.getContextPath() + "/weixin/");
+						urlPath.append(map.get(key));
+						break;
+					}
+			}
+			
+			 if (obj == null) { 
+				servletResponse.sendRedirect(servletRequest.getContextPath() + "/weixin/login.html?redirect_uri="+urlPath.toString());
+				 return;
+	       } else{
+	    	   servletResponse.sendRedirect(urlPath.toString());
+	    	   return;
+	       }
+			
+			
+        }   else {
+            // 已经登陆,继续此次请求
+            chain.doFilter(request, response);
+        }
+       
+
+    }
+
+    public void destroy() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

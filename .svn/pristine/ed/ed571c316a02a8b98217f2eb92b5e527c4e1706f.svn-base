@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.PdOrdersInfoMapper">
+	<resultMap type="com.sd.farmework.pojo.PdOrdersInfo" id="PdOrdersMap">
+	    <result column="PD_ID" property="pdId"/>
+		<result column="SECURITY_STOCK" property="securityStock"/>
+		<result column="REORDER_POINT" property="reorderPoint"/>
+		<result column="PRINT_NUM" property="printNum"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="STATUS" property="status"/>
+		<result column="APPROVEN_PERSON" property="approvenPerson"/>
+		<result column="APPROVEN_TIME" property="approvenTime"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="LAST_UPDATE_USER_NAME" property="lastUpdateUserName"/>
+		<result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+		<result column="RECEIPT_NO" property="receiptNo"/>
+		<result column="RECEIPT_DATE" property="receiptDate"/>
+		<result column="INVENTORY_DATE" property="inventoryDate"/>
+		<result column="WAREHOUSE" property="warehouse"/>
+		
+		<result column="DEPARTMENT" property="department"/>
+		<result column="STOCK_MANAGER" property="stockManager"/>
+		<result column="INVENTORY_PERSON" property="inventoryPerson"/>
+		<result column="REMARK" property="remark"/>
+		<result column="ADJUST_PERSON" property="adjustPerson"/>
+		<result column="MAX_STOCK" property="maxStock"/>
+		<result column="MIN_STOCK" property="minStock"/>
+	</resultMap>
+	
+	
+	<!-- 查询盘点审核的数量-->
+	<select id="queryPdShenHeCount" parameterType="com.sd.farmework.pojo.PdOrdersInfo"
+		resultType="java.lang.Integer">
+		    select count(*)  from pd_orders_info where 1=1 
+		    <if test="receiptNo!=null and receiptNo!=''">
+			    AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="inventoryDate!=null and inventoryDate!=''">
+				AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+			</if>
+			<if test="stockManager!=null and stockManager!=''">
+				AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+			</if> 
+		    and STATUS = #{status}
+	</select>
+	<!-- 查询盘点审核后的数量-->
+	<select id="queryPdShenHeCounted" parameterType="com.sd.farmework.pojo.PdOrdersInfo"
+		resultType="java.lang.Integer">
+		    select count(*)  from pd_orders_info where 1=1 
+		  	<if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="inventoryDate!=null and inventoryDate!=''">
+				AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+			</if>
+			<if test="stockManager!=null and stockManager!=''">
+				AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+			</if>
+		    and (STATUS= #{status} or STATUS=#{status1})
+	</select>
+	
+	<!-- 查询盘点审核 -->
+	<select id="queryPdShenHe" parameterType="com.sd.farmework.pojo.PdOrdersInfo"
+		resultMap="PdOrdersMap">
+		   	
+		  
+		    select RW, x.* from(
+		    select ROWNUM as RW, t.*  from pd_orders_info t where 1=1 
+		    and t.STATUS= #{status}
+		   
+		    	<if test="receiptNo!=null and receiptNo!=''">
+			     AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+				</if>
+				<if test="inventoryDate!=null and inventoryDate!=''">
+					AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+				</if>
+				<if test="stockManager!=null and stockManager!=''">
+					AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+				</if>
+		    ) x where RW BETWEEN #{index} and #{maxPage} 
+	
+			
+	</select>
+	<select id="queryPdShenHeed" parameterType="com.sd.farmework.pojo.PdOrdersInfo"
+		resultMap="PdOrdersMap">
+		   
+		    select RW, x.* from(
+		    select ROWNUM as RW, t.*  from pd_orders_info t where 1=1 
+		     <if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="inventoryDate!=null and inventoryDate!=''">
+				AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+			</if>
+			<if test="stockManager!=null and stockManager!=''">
+				AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+			</if>
+			and (t.STATUS= #{status} or t.STATUS=#{status1})
+		    ) x where RW BETWEEN #{index} and #{maxPage} 
+	
+			
+	</select>
+	
+	
+	
+	
+	
+	<!-- 盘点单列表查询 -->
+	<select id="queryList"  parameterType="com.sd.farmework.pojo.PdOrdersInfo"  resultMap="PdOrdersMap">
+		select *from (
+		select * from (
+		select d.*, row_number() OVER(ORDER BY null) AS "row_number" from PD_ORDERS_INFO d order by d.create_time desc) p
+		where
+		p."row_number" &gt; #{startRecod}) s
+		where rownum &lt;= #{pageSize}
+		<if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+		</if>
+		<if test="inventoryDate!=null and inventoryDate!=''">
+			AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+		</if>
+		<if test="stockManager!=null and stockManager!=''">
+			AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+		</if>
+
+		<if test="inventoryPerson!=null and inventoryPerson!=''">
+			AND INVENTORY_PERSON like '%'||#{inventoryPerson}||'%'
+		</if>
+		<if test="status!= null and status != ''"> 
+			   AND STATUS like '%'||#{status}||'%'
+			</if>
+		
+	
+	</select>
+	
+	<!-- 盘点单列表分页查询 -->
+	<select id="queryCount" parameterType="com.sd.farmework.pojo.PdOrdersInfo" resultType="java.lang.Integer">
+		
+		select count(*) as totalCount
+		from PD_ORDERS_INFO d
+		where 1=1
+		<if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+		</if>
+		<if test="inventoryDate!=null and inventoryDate!=''">
+			AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+		</if>
+		<if test="stockManager!=null and stockManager!=''">
+			AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+		</if>
+		<if test="stockManager!=null and stockManager!=''">
+			AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+		</if>
+
+		<if test="inventoryPerson!=null and inventoryPerson!=''">
+			AND INVENTORY_PERSON like '%'||#{inventoryPerson}||'%'
+		</if>
+		<if test="status!= null and status != ''"> 
+			   AND STATUS like '%'||#{status}||'%'
+			</if>
+	</select>
+	
+	<!-- 盘点单详情查询 Byid-->
+	<select id="queryById" parameterType="com.sd.farmework.pojo.PdOrdersInfo"
+		resultMap="PdOrdersMap">
+		SELECT 
+		PD_ID,
+		SECURITY_STOCK,
+		REORDER_POINT,
+		PRINT_NUM,
+		BAR_CODE,
+		APPROVEN_PERSON,
+		APPROVEN_TIME,
+		LAST_UPDATE_USER_NAME,
+		LAST_UPDATE_TIME,
+		CREATE_USER_NAME,
+		CREATE_TIME,
+		RECEIPT_NO,
+		RECEIPT_DATE,
+		INVENTORY_DATE,
+		WAREHOUSE,
+		DEPARTMENT,
+		STOCK_MANAGER,
+		INVENTORY_PERSON,
+		REMARK,
+		ADJUST_PERSON,
+		MAX_STOCK,
+		MIN_STOCK
+		FROM 
+		PD_ORDERS_INFO
+		WHERE PD_ID=#{pdId}
+	</select>
+
+<!-- 微信审核盘点单列表查询 -->
+	<select id="wxqueryListpd"  parameterType="com.sd.farmework.pojo.PdOrdersInfo"  resultMap="PdOrdersMap">
+	    SELECT * from PD_ORDERS_INFO where 1=1 and status=#{status}
+		<if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+		</if>
+		<if test="inventoryDate!=null and inventoryDate!=''">
+			AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+		</if>
+		<if test="stockManager!=null and stockManager!=''">
+			AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+		</if>
+		
+	</select>
+
+	<!-- 微信盘点单列表查询 -->
+	<select id="wxqueryList"  parameterType="com.sd.farmework.pojo.PdOrdersInfo"  resultMap="PdOrdersMap">
+	    SELECT
+		PD_ID,
+		SECURITY_STOCK,
+		REORDER_POINT,
+		PRINT_NUM,
+		BAR_CODE,
+		APPROVEN_PERSON,
+		APPROVEN_TIME,
+		LAST_UPDATE_USER_NAME,
+		LAST_UPDATE_TIME,
+		CREATE_USER_NAME,
+		CREATE_TIME,
+		RECEIPT_NO,
+		RECEIPT_DATE,
+		INVENTORY_DATE,
+		WAREHOUSE,
+		DEPARTMENT,
+		STOCK_MANAGER,
+		INVENTORY_PERSON,
+		REMARK,
+		ADJUST_PERSON,
+		MAX_STOCK,
+		MIN_STOCK,
+		STATUS
+		 from
+		PD_ORDERS_INFO
+		order by CREATE_TIME DESC
+		<if test="receiptNo!=null and receiptNo!=''">
+			AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+		</if>
+		<if test="inventoryDate!=null and inventoryDate!=''">
+			AND INVENTORY_DATE like '%'||#{inventoryDate}||'%'
+		</if>
+		<if test="stockManager!=null and stockManager!=''">
+			AND STOCK_MANAGER like '%'||#{stockManager}||'%'
+		</if>
+		
+	</select>
+	
+	<!-- 盘点单信息添加 -->
+	<insert id="add" parameterType="com.sd.farmework.pojo.PdOrdersInfo">
+		INSERT INTO PD_ORDERS_INFO(
+		PD_ID,
+		SECURITY_STOCK,
+		REORDER_POINT,
+		PRINT_NUM,
+		BAR_CODE,
+		CREATE_USER_NAME,
+		CREATE_TIME,
+		RECEIPT_NO,
+		RECEIPT_DATE,
+		INVENTORY_DATE,
+		WAREHOUSE,
+		DEPARTMENT,
+		STOCK_MANAGER,
+		INVENTORY_PERSON,
+		REMARK,
+		ADJUST_PERSON,
+		MAX_STOCK,
+		MIN_STOCK
+		)
+		VALUES(
+		Lpad(PD_ORDERS_INFO_SEQ.nextval,10,'0'),
+		#{securityStock},
+		#{reorderPoint},
+		#{printNum},
+		#{barCode},
+		#{createUserName},
+		SYSDATE,
+		#{receiptNo},
+		#{receiptDate},
+		#{inventoryDate},
+		#{warehouse},
+		#{department},
+		#{stockManager},
+		#{inventoryPerson},
+		#{remark},
+		#{adjustPerson},
+		#{maxStock},
+		#{minStock}
+		)			
+
+	</insert>
+	
+	<select id="querySeq" resultType="String">
+		select
+		Lpad(PD_ORDERS_INFO_seq.currval,10,'0') from dual
+	</select>
+	
+	
+	<!-- 修改状态 -->
+	<update id="update" parameterType="com.sd.farmework.pojo.PdOrdersInfo">
+		UPDATE PD_ORDERS_INFO SET
+		STATUS=#{status}	
+		WHERE
+		PD_ID=#{pdId}
+	</update>
+</mapper>

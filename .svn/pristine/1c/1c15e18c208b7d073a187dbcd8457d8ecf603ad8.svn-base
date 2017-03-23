@@ -1,0 +1,69 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.PdOrdersInfoMapper;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.service.PdOrdersInfoService;
+
+public class PdOrdersInfoServiceImpl extends BaseInfoServiceImpl implements
+		PdOrdersInfoService {
+ 
+	@Autowired
+	private PdOrdersInfoMapper baseMapper;
+
+	public PdOrdersInfoMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(PdOrdersInfoMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List wxqueryList(PdOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.wxqueryList(obj);
+	}
+
+	@Override
+	public String querySeq() {
+		// TODO Auto-generated method stub
+		return baseMapper.querySeq();
+	}
+
+	@Override
+	public List wxqueryListpd(PdOrdersInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.wxqueryListpd(obj);
+	}
+
+	@Override
+	public List<PdOrdersInfo> queryPdShenHe(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHe(obj);
+	}
+
+	@Override
+	public Integer queryPdShenHeCount(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHeCount(obj);
+	}
+
+	@Override
+	public Integer queryPdShenHeCounted(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return this.baseMapper.queryPdShenHeCounted(obj);
+	}
+
+	@Override
+	public List<PdOrdersInfo> queryPdShenHeed(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return  this.baseMapper.queryPdShenHeed(obj);
+	}
+
+	
+}

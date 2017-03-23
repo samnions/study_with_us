@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="../resources/css/pintuer.css">
+<link rel="stylesheet" href="../resources/css/admin.css">
+<script src="../resources/js/jquery.min.js"></script>
+<script src="../resources/js/pintuer.js"></script>
+<script src="../resources/js-date/WdatePicker.js"></script>
+<style type="text/css">
+
+.app{
+    padding:20px;
+
+}
+.att{
+   padding:10px;
+}
+</style>
+
+</head>
+<body>
+	<div class="panel admin-panel">
+		<div class="panel-head" id="add">
+			<strong><span class="icon-pencil-square-o"></span>审批	<a href="/NfCrmManager/approvenTestIndex.html">首页</a>
+			</strong>
+		</div>
+		<div class="body-content">
+			<form method="get" class="form-x" action="../rkApprove/saveApproven.do">
+									<input type="hidden" value="${sysApprovenTask.taskId}" name="taskId" >
+				
+				<div class="form-group">
+					<div class="label">
+						<label>任务名称：</label>
+					</div>
+					<div class="field">
+						<input type="text" class="input w50"  value="${sysApprovenTask.taskName}" name="user_name"
+							data-validate="required:请输入正确格式的数据"   />
+						<div class="tips"></div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="label">
+						<label>是否通过：</label>
+					</div>
+					<div class="field">
+								<select name="approvenResult" >
+							<option value="1">通过</option>
+							<option value="2">不通过</option>
+						</select>
+						<div class="tips"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="label">
+						<label>审批意见：</label>
+					</div>
+					<div class="field">
+						<textarea name="approvenRemark" rows="10" cols="50"></textarea>
+						<div class="tips"></div>
+					</div>
+				</div>
+				 
+				<div class="form-group">
+					<div class="label">
+						<label></label>
+					</div>
+					<div class="field">
+						<button class="button bg-main icon-check-square-o" type="submit">提交审核</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</body>
+</html>

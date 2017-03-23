@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.CgOrdersDetailMapper">
+	<!-- 插入采购订单详情信息 -->
+	<insert id="add" parameterType="com.sd.farmework.pojo.CgOrdersInfoDetail">
+			INSERT INTO CG_ORDERS_INFO_DETAIL(
+              DETAIL_ID,
+              ORDER_NO,
+              STOCK_NO,
+              STOCK_NAME,
+              STANDARD,
+              UNIT,
+              NUM,
+              TAXATION_PRICE,
+              PRICE,
+              DISCOUNT_RATE,
+              AMOUNT,
+              TAXATION_TYPE,
+              TAXATION_RATE,
+              SUM,
+              CREATE_USER_NAME,
+              CREATE_USER_ID,
+              CREATE_TIME,
+              UPDATE_USER_NAME,
+              UPDATE_USER_ID,
+              UPDATE_TIME
+          )
+          VALUES 
+          (
+          CG_ORDERS_INFO_DETAIL_SEQ.NEXTVAL,
+          #{orderNo},
+          #{stockNo},
+          #{stockName},
+          #{standard},   
+          #{unit},
+          #{num},
+          #{taxationPrice},
+          #{price},
+          #{discountRate},
+          #{amount},
+          #{taxationType},
+          #{taxationRate},
+          #{sum},
+           #{createUserName},
+           #{createUserId},
+          sysdate,
+          #{lastUpdateUserName},
+          #{lastUpdateUserId},
+          sysdate
+          )
+
+	</insert>
+</mapper>

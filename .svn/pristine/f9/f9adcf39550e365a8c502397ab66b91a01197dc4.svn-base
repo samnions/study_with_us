@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="/InventoryManager/resources/css/pintuer.css">
+<link rel="stylesheet" href="/InventoryManager/resources/css/admin.css">
+<link rel="stylesheet" href="/InventoryManager/resources/css/content.css" />
+<link type="text/css" rel="stylesheet" href="/InventoryManager/resources/css/bootstrap.min.css" />
+<script src="/InventoryManager/resources/js/jquery.min.js"></script>
+<script src="/InventoryManager/resources/js/pintuer.js"></script>
+<script src="/InventoryManager/resources/js-date/WdatePicker.js"></script>
+<script type="text/javascript"src="/InventoryManager/resources/js/jqPaginator.js"></script>
+<style>
+.pagination > li {
+    display:inline-block;
+}
+  .search_lab{
+  overflow:inherit;
+  float:left;
+  width:90px;
+  text_align:center;
+  margin-top:23px;
+  margin-left:10px;
+  }
+  .search_txt{
+  float:left;
+  margin-top:15px;
+  }
+  .body-content {
+    padding: 0;
+    overflow: hidden;
+}
+</style>
+</head>
+<body >
+	<div class="panel admin-panel">
+		<div class="panel-head">
+			<strong class="icon-reorder">采购订单列表<span
+				style="white-space: pre;"></span> 
+			</strong>
+		</div>
+		<div class="padding border-bottom">
+		<form action="/InventoryManager/cgOrders/PurchaseOrderlist.do" method="post">
+			<ul class="search" style="padding-left: 10px;">
+				<li>
+				   
+				             订单编号:<input id="orderNo" name="orderNo" value="${cgOrdersInfo.orderNo}" class="input"style="width: 120px; line-height: 17px; display: inline-block;" />
+				   
+				</li>
+			
+				<li>
+				   
+				            订单日期:<input id="orderDate" onClick="WdatePicker()" name="orderDate" value="${cgOrdersInfo.orderDate}" class="input"
+								style="width: 180px; line-height: 17px; display: inline-block;" /> 
+				  
+				</li>
+				
+				<li>
+				   
+				           采购人:<input id="purchasePerson" name="purchasePerson" value="${cgOrdersInfo.purchasePerson}" class="input"style="width: 120px; line-height: 17px; display: inline-block;" />
+				   
+				</li>
+				
+				<!-- <li>采购部门:<select name="" class="input" style="width:120px; line-height: 17px; display: inline-block" onchange="changesearch()">
+							<option value="">软件部</option>
+							<option value="">销售部</option>
+							<option value="">财务部</option>
+					          </select>
+				</li> -->
+				<li>
+						<button type="submit" class="button border-main icon-search"
+							>查询</button>
+				</li>
+
+			</ul>
+			</form>
+		</div>
+			
+			<table class="table table-hover text-center">
+					<tr>
+						<th colspan="20" style="text-align: left; padding-left: 10px;">采购订单</th>
+					</tr>
+				
+					
+					<tr>
+						<th>序号</th>
+						<th>订单编号</th>
+						<th>公司</th>
+						<th>供应商</th>
+						<th>采购员</th>
+						<th>采购部门</th>
+						<th>是否退货</th>
+						<th>订单日期</th>
+						<th>备注</th>
+						<th>制单人</th>
+						<th>制单时间</th>
+						<th>审批人</th>
+						<th>审批日期</th>
+						<th width="200px">操作</th>
+					</tr>
+				<#list infoList as list>
+					<tr>
+						<th>${list_index+1}</th>
+						<td>${list.orderNo}</td>
+						<td>${list.company}</td>
+						<td>${list.supplyShop}</td>
+						<td>${list.purchasePerson}</td>
+						<td>${list.purchaseTeam}</td>
+						<td>${list.isTh}</td>
+						<td>${list.orderDate}</td>
+						<td>${list.remark}</td>
+						<td>${list.createUserName}</td>
+						<td>${list.createTime}</td>
+						<td>${list.approvenPerson}</td>
+						<td>${list.approvenDate}</td>
+						<td>
+						<a class="button border-main icon-search"	
+							href="/InventoryManager/cgOrders/PurchaseOrderDetail.do?orderNo=${list.orderNo}&currPage=${currPage}">详情 </a>
+						<a class="button border-main icon-search"
+						   href="/InventoryManager/menu/upPurchaseOrder.do">上传 </a>
+						</td>
+					</tr>
+					</#list>
+				     <tr>
+					<td colspan="14">
+						<ul class="pagination" id="pagination"></ul>
+					</td>
+				</tr>
+				</table>
+	</div>
+
+<script type="text/javascript">
+$.jqPaginator('#pagination', {
+    totalPages: ${totalCount},
+    visiblePages: 10,
+    currentPage: ${currPage},
+    prev: '<li class="prev"><a href="javascript:;">上一页</a></li>',
+    next: '<li class="next"><a href="javascript:;">下一页</a></li>',
+    page: '<li class="page"><a href="javascript:;">{{page}}</a></li>',
+    onPageChange: function (num, type) {
+    	console.info(type);
+    	if(type!='init'){ 	   
+    		window.location.href="/InventoryManager/cgOrders/PurchaseOrderlist.do?currPage="+num+"&orderNo="+$('#orderNo').val()+"&orderDate="+$('#orderDate').val()+"&purchasePerson="+$('#purchasePerson').val();
+    	}
+    }
+}); 
+
+</script>
+</body>
+</html>

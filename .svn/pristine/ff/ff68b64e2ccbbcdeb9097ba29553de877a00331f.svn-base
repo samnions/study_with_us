@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <script src="../resources/weixin/js/jquery.min.js"></script>
+    <meta http-equiv=”Expires” CONTENT=”0″>
+    <meta http-equiv=”Cache-Control” CONTENT=”no-cache”>
+    <meta http-equiv=”Pragma” CONTENT=”no-cache”>
+    <meta name="Author" content="npc-guangming">
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script type="text/javascript"src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../resources/weixin/styles/shopCarts.css">
+    <title>出库单详情</title>
+    <style type="text/css">
+   		body{
+   			font-family: 微软雅黑;	
+   		}
+   		.reback{
+   			position:absolute;
+   			top:5px;
+   			left:15px;
+   			width: 25px;
+   			heigth:25px;
+   		}
+   		#scanQRCode1{
+   			position:absolute;
+   			top:5px;
+   			right:15px;
+   			width: 25px;
+   			heigth:25px;
+   		}
+   		.count{
+   			position: absolute;
+   			right: 50px;
+   		}
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <label class="reback"><a href="../weixin/outwarehouselist.html"><img src="../resources/images/icon_back.png" style="width: 25px;height: 25px;"></a></label>
+    </div>
+    <div id="content">
+    </div>
+    <div id="footer">
+        <label><a href="../weixin/outwarehouselist.html"><span class="weui-btn weui-btn_mini weui-btn_primary">返回</span></a></label>
+    </div>
+    <script type="text/javascript">
+    window.shareType = "2";
+    	addlist();
+    	
+       function GetQueryString(name){
+             var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+             var r = window.location.search.substr(1).match(reg);
+             if(r!=null)return  unescape(r[2]); return null;
+          }
+        function addlist() {
+        	var url="../CkAdmin/queryCkInfoDetailForwx.do?ckId="+GetQueryString("ckId");
+    		$.ajax({
+    		    url:url,
+    		    dataType:"json",
+    		 	contentType:'application/x-www-form-urlencoded; charset=UTF-8', 
+    		    success:function(result){
+			        var listHtml="";         
+			         for (var i = 0; i < result.length; i++) {
+			              listHtml+="<ul id=litem"+i+"><div class='itemName'><label>"+result[i].name+"</label></div>";
+			              for(var k = 0; k < result[i].list1.length; k++){
+			            	  if(result[i].list1[k].status!='0'){
+			            		  listHtml+=" <li style='height: 240px;background: white;position: relative;border-bottom: 1px solid #f2f2f2;' id=litem"+i+"-"+k+"><div class='itemMsg'><label class='name1'>&nbsp;&nbsp;"+"出库单详情"+"</label><label class='dingdanNo'>入库单号:<b>&nbsp;&nbsp;"+result[i].list1[k].receiptNo+"</b></label><br/><label class='dingdanNo'>出库单号:<b>&nbsp;&nbsp;"+result[i].list1[k].ckReceiptNo+"</b></label><label class='partment'>采购部门:&nbsp;&nbsp;"+result[i].list1[k].cgTeam+"</label><label class='person'>&nbsp;&nbsp;&nbsp;制单人:&nbsp;&nbsp;"+result[i].list1[k].createUserName+"</label><label class='support'>&nbsp;&nbsp;&nbsp;供应商:&nbsp;&nbsp;"+result[i].list1[k].supplyShop+"</label></label><label class='times'>制单时间:&nbsp;&nbsp;"+result[i].list1[k].createTime+"</label><br><label class='times'>审核人:&nbsp;&nbsp;"+result[i].list1[k].approvenPerson+"</label><br><label class='times'>审核时间:&nbsp;&nbsp;"+result[i].list1[k].approvenTime+"</label><input type='hidden' id='rkid' value='"+result[i].list1[k].rkId+"'></div></li>"
+			            	  }else{
+			            		  listHtml+=" <li style='height: 220px;background: white;position: relative;border-bottom: 1px solid #f2f2f2;' id=litem"+i+"-"+k+"><div class='itemMsg'><label class='name1'>&nbsp;&nbsp;"+"出库单详情"+"</label><label class='dingdanNo'>入库单号:<b>&nbsp;&nbsp;"+result[i].list1[k].receiptNo+"</b></label><br/><label class='dingdanNo'>出库单号:<b>&nbsp;&nbsp;"+result[i].list1[k].ckReceiptNo+"</b></label><label class='partment'>采购部门:&nbsp;&nbsp;"+result[i].list1[k].cgTeam+"</label><label class='person'>&nbsp;&nbsp;&nbsp;制单人:&nbsp;&nbsp;"+result[i].list1[k].createUserName+"</label><label class='support'>&nbsp;&nbsp;&nbsp;供应商:&nbsp;&nbsp;"+result[i].list1[k].supplyShop+"</label></label><label class='times'>制单时间:&nbsp;&nbsp;"+result[i].list1[k].createTime+"</label><br><label class='times'>审核人:&nbsp;&nbsp;"+result[i].list1[k].approvenPerson+"</label><input type='hidden' id='rkid' value='"+result[i].list1[k].rkId+"'></div></li>"
+			            	  }
+			            	}
+			              for (var j = 0; j < result[i].list.length; j++) {
+			              listHtml+=" <li id=litem"+i+"-"+j+"><div class='itemMsg'><label class='name'>"+result[i].list[j].stockName+"</label><label class='totalprice' id=total"+i+"-"+j+">总价：￥"+(result[i].list[j].price)*(result[i].list[j].realNum)+"</label><label class='price'>￥<span id=price"+i+"-"+j+">"+result[i].list[j].price+"</span></label><label class='warehour'>编号:"+result[i].list[j].stockNo+"</label><div class='sub_add'><label class='count'> 数量："+result[i].list[j].realNum+"</label></div></div></li>"
+			              }
+			             listHtml+="</ul>";
+			         }
+			       $("#content").empty().append(listHtml);
+			   }
+    		});	
+		}
+            function getsum(e){
+            	var tid = e.id.substring(5,8);
+                var count = parseInt($("#count" + tid).val());
+                var sumnum = parseInt($("#all" + tid).val());
+                if($("#count" + tid).val()==""){
+            		$("#count" + tid).val(0);
+            	}else{
+            		if((count+1)>sumnum){
+            			alert("超过上限！！");
+            			$("#count" + tid).val(sumnum);
+            		}else{
+            			$("#count" + tid).val(count);
+            		}
+            	}
+            	var price=parseFloat(document.getElementById("price"+tid).innerHTML);
+            	var total=document.getElementById("total"+tid);
+            	total.innerHTML="总价：￥"+$("#count" + tid).val()*price;
+            	
+            }
+    </script>
+    <script src="../resources/weixin/common/shareApiCk.js"></script>
+</body>
+
+</html>

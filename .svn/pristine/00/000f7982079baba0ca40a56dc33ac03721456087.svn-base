@@ -1,0 +1,29 @@
+package com.sd.farmework.service.impl; 
+
+import java.util.List;
+
+import com.sd.farmework.service.SysFunctionInfoService; 
+
+import org.springframework.stereotype.Service; 
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.SysFunctionInfoMapper; 
+
+import org.springframework.beans.factory.annotation.Autowired; 
+
+/** 
+ * 功能菜单信息表
+ * @author Administrator 
+ * 
+ */ 
+ @Service
+public class SysFunctionInfoServiceImpl extends BaseInfoServiceImpl implements SysFunctionInfoService{ 
+    @Autowired
+    private SysFunctionInfoMapper baseMapper;
+    public SysFunctionInfoMapper getBaseMapper(){
+     return baseMapper;
+    }
+    public void setBaseMapper(SysFunctionInfoMapper baseMapper){
+    	this.baseMapper = baseMapper;
+    }
+}

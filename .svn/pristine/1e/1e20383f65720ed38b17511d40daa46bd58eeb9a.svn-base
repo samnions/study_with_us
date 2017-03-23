@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>WeUI</title>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script src="../resources/weixin/js/zepto.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <script src="../resources/weixin/js/example.js"></script>
+<style type="text/css">
+
+.mytable {
+	width: 100%;
+	height: 150px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+.mytable0 {
+	width: 100%;
+	height: 150px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+.mytable1 {
+	width: 100%;
+	height: 150px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+
+        .item1{
+    		padding: 20px;float:left;
+    	}
+    	.item2{
+    		padding: 20px;float:right;
+    	}
+    	.item3{
+    		padding-left:20px;float:left;
+    		margin-top: -30px;
+    	}
+    	.item4{
+    		padding-left:20px;float:left;
+    		margin-top: 20px;
+    	}
+    
+
+.item5 {
+	padding: 15px;
+	float：left;
+}
+
+.item6 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -40px;
+	margin-left: 175px;
+}
+
+.item7 {
+	float: left;
+	padding: 20px;
+	margin-top: -20px;
+	margin-left: -5px;
+}
+
+.item8 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -45px;
+	margin-left: 175px;
+}
+.item9 {
+	float: left;
+	margin-top: -10px;
+	margin-left: 15px;
+}
+.item10 {
+	float: left;
+	margin-top: -10px;
+	margin-left: 80px;
+}
+
+</style>
+<title>Insert title here</title>
+</head>
+<script type="text/javascript">
+ //取当前地址栏参数
+function GetQueryString(name)
+  {
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+ }
+ 
+$(document).ready(function(){
+	var data={
+			pdId:GetQueryString("pdId")
+	 };	
+	$.ajax({
+		type : "POST",
+		url : "../Inventory/wxInventorySingleDetail.do",
+		data : data,
+		async : true,
+		dataType : "json",
+		success : function(sumdata) {
+			var dataobj=sumdata.WXPO
+			var son="<div class='mytable'><div style='height:65%'><div class='item1'>盘点人："+dataobj.inventoryPerson+"</div><div class='item2'>&nbsp;&nbsp;&nbsp;</div></div><div class='item3'>盘点单号："+dataobj.receiptNo+"</div><div class='item4'>盘点时间："+dataobj.inventoryDate+"</div></div>";
+			      $("#text").append(son);
+			
+			var datapp=sumdata.wxtestList
+			 for(var i=0;i<datapp.length;i++){
+			     var son="<div class='mytable0'><div style='height:65%'><div class='item1'>审核人："+datapp[i].approvenUserName+"</div><div class='item2'>&nbsp;&nbsp;&nbsp;</div></div><div class='item3'>审核时间："+datapp[i].approvenSendTime+"</div><div class='item4'>审核意见："+datapp[i].approvenRemark+"</div></div>";
+				  $("#text").append(son);    
+			} 
+			var datamap=sumdata.WXDetaillist
+			 for(var i=0;i<datamap.length;i++){
+				 var son="<div class='mytable1'><div class='item5'><b>物资信息</b></div><div class='item6'>&nbsp;</div><div class='item7'>存货名称："+datamap[i].stockName+"</div><div class='item8'>计量单位："+datamap[i].unit+"</div><div class='item9'>盘点数量："+datamap[i].afterNum+"</div><div class='item10'>存货编码："+datamap[i].stockNo+"</div></div>";
+				  $("#text").append(son);
+			}
+			
+		},
+		error : function(rec) {
+			console.info("网络异常,请稍后再试");
+		}
+	}); 
+});   
+</script>
+<body>
+<div class="weui-cells__title" >	
+	
+	<a href="../weixin/inventory.html"><img class="img" width="35px" height="35px"  src="./images/back.png""
+					alt="" /></a>
+	<b style="margin-left:100px;">盘点单详情</b></div>
+    
+	
+	<div class="page__bd" style="height: 100%;">
+		<div class="weui-tab">
+
+			<div class="weui-tab__panel" id="text">
+			
+
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

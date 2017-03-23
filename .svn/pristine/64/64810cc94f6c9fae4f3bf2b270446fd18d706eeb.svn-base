@@ -1,0 +1,18 @@
+package com.sd.farmework.service; 
+
+import com.sd.farmework.pojo.SysFunctionInfo;
+
+/** 
+ * 功能菜单信息表
+ * @author Administrator 
+ * 
+ */ 
+public interface SysFunctionInfoService  extends BaseInfoService{ 
+ 	/**
+	 * 添加信息
+	 * @param user
+	 * @throws Exception
+	 */
+	public void add(SysFunctionInfo obj,String [] powers) throws Exception;
+
+}

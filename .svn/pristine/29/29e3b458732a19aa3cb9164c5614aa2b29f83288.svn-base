@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>CheckBox Tree - jQuery EasyUI Demo</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../resources/jquery-easyui-1.4.3/demo/demo.css">
+	
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../resources/admin/sysManage/sysUnitInfo.js"></script>
+
+
+<style type="text/css">
+body{
+  padding:0px 0px 0px 0px;
+}
+
+</style>
+
+</head>
+<body>
+	<div class="easyui-layout" style="width:100%;height:500px;">
+  		<div data-options="region:'west',split:true" title="组织架构" style="width:200px;">
+  			<ul id="sysdepartInfoId" class="easyui-tree" data-options="url:'../SysDepartInfo/queryList.do',method:'get',animate:true,checkbox:false"></ul>
+  		</div>
+		<div data-options="region:'center',title:'详情',iconCls:'icon-ok'"  >
+		 <form id="form1" method="post">
+	    	<input type="hidden" value="${approvenFunctionId}"  name="approvenFunctionId">
+			<input type="hidden" value="${approvenFunctionName}"  name="approvenFunctionName">
+			<input type="hidden"    name="approvenUnitId"   id="approvenUnitId">
+			<input type="hidden"    name="approvenUnitName" id="approvenUnitName">
+			
+			<input type="hidden"    name="approvenDepartId"  id="approvenDepartId">
+			<input type="hidden"    name="approvenDepartName" id="approvenDepartName">
+			
+			<input type="hidden"    name="approvenTeamId" id="approvenTeamId">
+			<input type="hidden"    name="approvenTeamName" id="approvenTeamName">
+			
+			<table cellpadding="5">
+	    	<tr>
+	    	<td>业务类型代码:</td>
+	    			<td style="text-align:left">${approvenFunctionId}</td>
+	    		</tr>
+	    		<tr>
+	    		<td>业务类型名称:</td>
+	    			<td style="text-align:left">${approvenFunctionName}</td>
+	    		</tr>
+	    		<tr>
+	    			<td>审批规则所属部门:</td>
+	    			<td id="approvenDepart"></td>
+	    		</tr>
+	    		<tr>
+	    			<td>规则名称:</td>
+	    			<td><input class="easyui-textbox"   type="text" name="approvenRuleName" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>是否有序审批:</td>
+	    			<td><select class="easyui-combobox" name="ruleIsOrderly">
+	    					<option value="1">有序</option>
+	    					<option value="2">无序</option>
+	    				</select></td>
+	    		</tr>
+	    		<tr>
+	    			<td>是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="status">
+	    					<option value="Y">启用</option>
+	    					<option value="N">禁用</option>
+	    				</select>
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>备注:</td>
+	    			<td><input class="easyui-textbox" type="text"   name="approvenRemark" data-options="required:true"></input></td>
+	    		</tr>
+	    	</table>
+	    	</form>
+	    		    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+	    </div>
+				</div>
+		
+			</div>
+ 
+<script type="text/javascript">
+
+$(document).ready(function() { 
+$('#sysdepartInfoId').tree({
+    onClick: function(node){
+    	
+    	var text=node.text;
+    	var id =node.id;
+    	if(id.length==9){
+    		 
+    		$("#approvenUnitId").val(id);
+    		$("#approvenUnitName").val(text);
+    		$("#approvenDepart").text(text);
+    		
+    	}else if(id.length==15){
+    		//部门
+    		 var pnode = $('#sysdepartInfoId').tree('getParent', node.target);
+    		 var ppnode = $('#sysdepartInfoId').tree('getParent', pnode.target);
+    		
+    		$("#approvenUnitId").val(ppnode.id);
+    		$("#approvenUnitName").val(ppnode.text);
+    		
+    		$("#approvenDepartId").val(id);
+    		$("#approvenDepartName").val(text);
+    		$("#approvenDepart").text(ppnode.text+"-"+text);
+    		
+    	}else if(id.length==21){
+	   		 var pnode = $('#sysdepartInfoId').tree('getParent', node.target);
+	   		 var ppnode = $('#sysdepartInfoId').tree('getParent', pnode.target);
+	   		 
+	 		$("#approvenDepartId").val(ppnode.id);
+	 		$("#approvenDepartName").val(ppnode.text);
+	 		
+	 		  pnode = $('#sysdepartInfoId').tree('getParent', ppnode.target);
+	   		   ppnode = $('#sysdepartInfoId').tree('getParent', pnode.target);
+	 		
+	 		$("#approvenUnitId").val(ppnode.id);
+			$("#approvenUnitName").val(ppnode.text);
+	 		
+	 		$("#approvenTeamId").val(id);
+	 		$("#approvenTeamName").val(text);
+	 		$("#approvenDepart").text(ppnode.text+"-"+pnode.text+"-"+text);
+ 		
+ 	}
+    	 
+    }
+    
+    });});
+    
+function submitForm(){
+	if($("#approvenDepart").text()==""){
+		 alert("请先选择部门信息");
+		 return ;
+	} 
+	
+	$.ajax({
+        cache: true,
+        type: "POST",
+        url:"../SysApprovenFunctionRule/saveApprovenRuleInfo.do",
+        data:$('#form1').serialize(),// 你的formid
+        async: false,
+        error: function(request) {
+            alert("Connection error");
+        },
+        success: function(data) {
+           if(JSON.parse(data).code=="000"){
+        	   alert("信息保存成功 ！");
+        	   window.close();
+        	   window.opener.document.getElementsByName("right")[0].src="../SysRoleInfo/queryListIndex.do";
+           }
+        }
+    });
+}
+ 
+</script>
+</body>
+</html>
+

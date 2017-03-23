@@ -1,0 +1,41 @@
+package com.sd.farmework.controller.util;
+
+import java.util.List;
+
+import com.sd.farmework.common.util.SqlDateUtil;
+import com.sd.farmework.pojo.RemoteObject;
+import com.sd.farmework.pojo.RemoteObjectDetail;
+
+public class JDBCExample {
+	public static void main(String[] argv) {
+
+		
+//		String sql = "SELECT P.CORDERID,P.PK_CORP,P.CBIZTYPE,P.CPURORGANIZATION,P.CVENDORBASEID,P.CEMPLOYEEID,P.CDEPTID,P.BRETURN,P.DORDERDATE,"
+//	      +" P.VMEMO,P.COPERATOR,P.CREVISEPSN,P.CAUDITPSN,P.DAUDITDATE,P.FORDERSTATUS"
+//	      +" FROM PO_ORDER P ";
+		String sql = "SELECT B.CORDERID,C.INVCODE,C.INVNAME,C.INVSPEC,B.CASSISTUNIT,B.NORDERNUM,B.NORGTAXPRICE,B.NORIGINALCURPRICE,B.NDISCOUNTRATE,"
+			       +" B.NMONEY,B.IDISCOUNTTAXTYPE,B.NTAXRATE,B.NTAXPRICEMNY,b.coperator"
+			   	+" FROM PO_ORDER_B B,BD_INVBASDOC C "
+			   	+" WHERE B.CBASEID = C.PK_INVBASDOC";
+		
+//		//String sql = SqlDateUtil.getSql("2017-01-01", "2017-02-02");
+//        System.out.println(sql);
+//		List<RemoteObject> list = JDBCPostgresqlUtil.getDataInfo(sql);
+//		System.out.println(list);
+//		for (RemoteObject remoteObject : list) {
+//			System.out.println("物资名称："+remoteObject.getOrderNo());
+//		}
+        
+		
+		
+		
+		//String sql = SqlDateUtil.getSql("2017-01-01", "2017-02-02");
+        System.out.println(sql);
+		List<RemoteObjectDetail> list = JDBCPostgresqlUtil.getDataDetail(sql);
+		System.out.println(list);
+		for (RemoteObjectDetail remoteObject : list) {
+			System.out.println("物资名称："+remoteObject.getOrderNo());
+		}
+		
+	}
+}

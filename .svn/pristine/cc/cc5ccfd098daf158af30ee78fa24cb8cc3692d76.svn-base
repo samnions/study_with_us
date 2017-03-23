@@ -1,0 +1,62 @@
+package com.sd.farmework.service.impl;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.mapper.CgOrdersInfoMapper;
+import com.sd.farmework.service.CgOrdersInfoService;
+/**
+ * 入库管理
+ * @author xsj
+ * 2017年1月5日15:46:20
+ */
+@Service
+public class CgOrdersInfoServiceImpl   extends BaseInfoServiceImpl  implements CgOrdersInfoService {
+
+	private static Logger logger = Logger.getLogger(CgOrdersInfoServiceImpl.class);
+	
+	@Autowired
+	private CgOrdersInfoMapper baseMapper;
+
+	public CgOrdersInfoMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(CgOrdersInfoMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+
+	@Override
+	public List queryByOrderNo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.queryByOrderNo(obj);
+	}
+
+	@Override
+	public List weiCharQueryList(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		return baseMapper.weiCharQueryList(obj);
+	}
+
+	@Override
+	public void updateRkCgOrderDetailInfo(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		baseMapper.updateRkCgOrderDetailInfo(obj);
+	}
+
+	@Override
+	public void updateRkCgOrdeInfoStauts(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		baseMapper.updateRkCgOrdeInfoStauts(obj);
+	}
+
+	@Override
+	public void updateNum(BaseInfo obj) {
+		// TODO Auto-generated method stub
+		baseMapper.updateNum(obj);
+	}
+}

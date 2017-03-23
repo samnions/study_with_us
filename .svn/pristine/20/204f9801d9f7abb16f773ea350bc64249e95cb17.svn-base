@@ -1,0 +1,220 @@
+package com.sd.farmework.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.pojo.CgOrdersInfo;
+import com.sd.farmework.pojo.CgOrdersInfoDetail;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfoDetail;
+import com.sd.farmework.service.CgOrdersInfoService;
+import com.sd.farmework.service.CkOrdersService;
+import com.sd.farmework.service.PdOrdersInfoService;
+import com.sd.farmework.service.RkOrdersService;
+
+/**
+ * 用户登录
+ * 
+ * @author 李真
+ * @date:2017年1月5日 下午3:30:54
+ * 
+ */
+
+@Controller
+@Scope("prototype")
+@RequestMapping(value = "/task")
+public class SysApprovenTask1Controller {
+	private static Logger logger = Logger
+			.getLogger(SysApprovenTask1Controller.class);
+
+	@Autowired
+	private CkOrdersService ckOrdersService;
+	@Autowired
+	private RkOrdersService rkOrdersService;
+	@Autowired
+	private PdOrdersInfoService pdOrdersInfoService;
+	@Autowired
+	private CgOrdersInfoService cgOrdersInfoService;
+	
+	
+	
+	
+	/**
+	 * pc端的审核操作
+	 */
+	@RequestMapping(value = "/approval", method = RequestMethod.GET)
+	public String approval(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo,HttpServletRequest request) {
+        try {
+        	if("1".equals(flag)){//ruku
+        		rkOrdersInfo=(RkOrdersInfo) this.rkOrdersService.queryById(rkOrdersInfo);
+         	   model.addAttribute("obj", rkOrdersInfo);
+         	  model.addAttribute("flag","1");
+        	}else if("2".equals(flag)){//chuku
+        		ckOrdersInfo=(CkOrdersInfo) this.ckOrdersService.queryById(ckOrdersInfo);
+       		 model.addAttribute("obj",ckOrdersInfo );
+       		 model.addAttribute("flag","2");
+        	}else if("3".equals(flag)){//pandian
+        		 pdOrdersInfo=(PdOrdersInfo) this.pdOrdersInfoService.queryById(pdOrdersInfo);
+          	   model.addAttribute("obj",pdOrdersInfo);  
+          	 model.addAttribute("flag","3");
+        	}
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "testApproven/TestApproven";
+	}
+	
+	/**
+	 * 审核操作
+	 */
+	@RequestMapping(value = "/approvalsubmit", method = RequestMethod.POST)
+	public String approvalsubmit(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo) {
+       try {
+    	   if("1".equals(flag)){
+    		   if("1".equals(rkOrdersInfo.getStatus())){
+    		       this.rkOrdersService.update(rkOrdersInfo);
+    		   }else if("2".equals(rkOrdersInfo.getStatus())){
+    			   this.rkOrdersService.update(rkOrdersInfo);
+    		   }
+    	   }else if("2".equals(flag)){
+    		   if("1".equals(ckOrdersInfo.getStatus())){
+    		       this.ckOrdersService.update(ckOrdersInfo);
+    		   }else if("2".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    		   }
+    	   }else if("3".equals(flag)){
+    		   if("1".equals(pdOrdersInfo.getStatus())){
+    			   this.pdOrdersInfoService.update(pdOrdersInfo);
+    		   }else if("2".equals(pdOrdersInfo.getStatus())){
+    			   this.pdOrdersInfoService.update(pdOrdersInfo);
+    		   }
+    		  
+    	   }
+		
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+       if("1".equals(flag)){
+    	   return "redirect:/RkAdmin/queryRkInfolist.do?tag=1&status=0"; 
+	   }else if("2".equals(flag)){
+		   return "redirect:/CkAdmin/queryCkInfolist.do?tag=1&status=0";  
+	   }else if("3".equals(flag)){
+		   return "redirect:/Inventory/InventorySinglelist.do?tag=1&status=0"; 
+	   }else{
+		   return null;
+	   }
+      
+	
+	}
+	/**
+	 *  微信端审核功能
+	 * @param model
+	 * @param flag
+	 * @param ckOrdersInfo
+	 * @param pdOrdersInfo
+	 * @param rkOrdersInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/wxApprovalsubmit")
+	public void wxApprovalsubmit(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo,HttpServletResponse response) {
+       try {
+    	   
+    	   
+    	  
+		   RkOrdersInfo qureyOrderNo = rkOrdersService.qureyOrderNo(rkOrdersInfo);
+    	
+		   if("1".equals(flag)){
+    		   if("1".equals(rkOrdersInfo.getStatus())){
+    			   CgOrdersInfo cgOrdersInfo = new CgOrdersInfo();
+    			   cgOrdersInfo.setOrderStauts("Y");
+    			   cgOrdersInfo.setOrderNo(qureyOrderNo.getOrderNo());
+        		   cgOrdersInfoService.updateRkCgOrdeInfoStauts(cgOrdersInfo);
+        		   //再修改入库订单的审核状态
+        		   this.rkOrdersService.update(rkOrdersInfo);
+    			   response.getWriter().write("f");
+	    		   }else if("2".equals(rkOrdersInfo.getStatus())){
+	    			   
+	    			   this.rkOrdersService.update(rkOrdersInfo);
+	    			   
+	        		   RkOrdersInfoDetail rkOrdersInfoDetail = new RkOrdersInfoDetail();
+	        		   rkOrdersInfoDetail.setRkId(rkOrdersInfo.getRkId());
+	        		   List<RkOrdersInfoDetail> wxShqueryRkInfoDetaillist = rkOrdersService.wxShqueryRkInfoDetaillist(rkOrdersInfoDetail);
+	        		 
+	//        		   CgOrdersInfoDetail cgOrdersInfoDetail = new CgOrdersInfoDetail();
+	//        		   cgOrdersInfoDetail.setOrderNo(qureyOrderNo.getOrderNo());
+	        		 //  List<CgOrdersInfoDetail> cgShopInfo = cgOrdersInfoService.queryByOrderNo(cgOrdersInfoDetail);
+	        		   
+	        		   for (int i = 0; i < wxShqueryRkInfoDetaillist.size(); i++) {
+	        			   RkOrdersInfoDetail rkOrdersInfoDetail2 = wxShqueryRkInfoDetaillist.get(i);
+	        			   CgOrdersInfoDetail cgOrdersInfoDetail = new CgOrdersInfoDetail();
+	        			   cgOrdersInfoDetail.setNum(rkOrdersInfoDetail2.getRealNum());
+	        			   cgOrdersInfoDetail.setStockNo(rkOrdersInfoDetail2.getStockNo());
+	        			   cgOrdersInfoService.updateNum(cgOrdersInfoDetail);
+	    			}
+	        		   CgOrdersInfo cgOrdersInfo = new CgOrdersInfo();
+	    			   cgOrdersInfo.setOrderStauts("Y");
+	    			   cgOrdersInfo.setOrderNo(qureyOrderNo.getOrderNo());
+	        		   cgOrdersInfoService.updateRkCgOrdeInfoStauts(cgOrdersInfo);
+	        		   response.getWriter().write("t");
+	    	   }
+    	   }else if("2".equals(flag)){
+    		   if("1".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    			   response.getWriter().write("f");
+    			  
+    		   }else if("2".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    			   response.getWriter().write("t");
+    		   }
+    		  
+    	   }else if("3".equals(flag)){
+    		   if("1".equals(pdOrdersInfo.getStatus())){
+    			   this.pdOrdersInfoService.update(pdOrdersInfo);
+    			   response.getWriter().write("f");
+    			  
+    		   }else if("2".equals(pdOrdersInfo.getStatus())){
+    			   this.pdOrdersInfoService.update(pdOrdersInfo);
+    			   response.getWriter().write("t");
+    		   }
+ 
+    	   }
+    	  
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} 
+       
+	}
+	
+
+	/**
+	 * 	微信端的审核操作
+	 */
+	@RequestMapping(value = "/Wxapproval", method = RequestMethod.GET)
+	public String Wxapproval(Model model,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo) {
+         return "redirect:/RkAdmin/queryRkInfolist.do?tag=3";
+	
+	}
+	
+	
+	
+	
+	
+
+}

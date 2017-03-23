@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="../resources/css/pintuer.css">
+<link rel="stylesheet" href="../resources/css/admin.css">
+<script src="../resources/js/jquery.min.js"></script>
+<script src="../resources/js/pintuer.js"></script>
+<link type="text/css" rel="stylesheet"	href="../resources/css/bootstrap.min.css" />
+<link rel="stylesheet" href="../resources/css/reset.css" />
+<link rel="stylesheet" href="../resources/css/content.css" />
+<script type="text/javascript"	src="../resources/js/jqPaginator.js"></script>
+<script type="text/javascript"	src="../resources/js-date/WdatePicker.js"></script>
+
+</head>
+<body>
+
+	<div class="panel admin-panel">
+		<div class="panel-head">
+			<strong class="icon-reorder">用户列表</strong> <a href=""
+				style="float: right; display: none;">添加字段</a>
+		</div>
+		<div class="padding border-bottom">
+				<form action="../useradmin/queryUserList.do" method="get">
+			<ul class="search" style="padding-left: 10px;">
+				<li>&nbsp;&nbsp;&nbsp;</li>
+					<li>姓名 <input name="user_name" value="${obj.userName}"
+						class="input" onchange="changesearch()"
+						style="width: 120px; line-height: 17px; display: inline-block" />
+						&nbsp;&nbsp; 编号 <input
+						name="user_no" value="${obj.userNo}" type="text" class="input"
+						onchange="changesearch()"
+						style="width: 120px; line-height: 17px; display: inline-block" />
+
+						&nbsp;&nbsp; 账号 <input name="account_no"
+						value="${obj.loginName}" type="text" class="input"
+						onchange="changesearch()"
+						style="width: 120px; line-height: 17px; display: inline-block" />
+
+					</li>
+					<if condition="$iscid eq 1">
+					<li>录入时间 <input name="employ_time" readOnly="readonly"
+						value="${obj.employ_time}" type="text" class="input "
+						onClick="WdatePicker({readOnly:true})"
+						style="width: 120px; line-height: 17px; display: inline-block" />
+					</li>
+					</if>
+			</ul>
+			<ul class="search" style="padding-left: 10px;">
+				<li>
+					<button class="button border-main icon-search" type="submit">查询</button>
+				</li>
+				<li>
+					<button class="button border-main icon-add" type="submit" onclick="mainOpenUserAdd()">添加</button>
+				</li>
+			</ul>
+		</form>
+		</div>
+		<table class="table table-hover text-center">
+			<tr>
+				<th width="100" style="text-align: left; padding-left: 20px;">序号</th>
+				<th width="10%">姓名</th>
+				<th>单位</th>
+				<th>部门</th>
+				<th>班组</th>
+				<th>编号</th>
+				<th>账号</th>
+			 	<th>创建时间</th>
+				<th width="310">操作</th>
+			</tr>
+			<volist name="list" id="vo"> </volist>
+			<#list list as item> 
+			<tr>
+				<td style="text-align: left; padding-left: 20px;">
+					${item_index+1}</td>
+				<td>${item.userName}</td>
+				<td>${item.unitName}</td>
+				<td>${item.departName}</td>
+				<td>${item.teamName}</td>
+				<td>${item.userNo}</td>
+				<td><font color="#00CC99">${item.loginName}</font></td>
+				 <td>${item.createTime}</td>
+				<td><input id="team_id" type="hidden"
+					value="${item.user_group}" />
+					<div class="button-group">
+				 
+						<a class="button border-main"
+							href="queryUserByid.do?user_id=${item.userId}&user_name=${item.userName}"> <span
+							class="icon-edit"></span>修改
+						</a>
+						<a class="button border-main"
+							href="javascript:mainOpenPower('${item.userId}')"> <span
+							class="icon-edit"></span>权限
+						</a>
+					 
+					</div></td>
+			</tr>
+			</#list>
+ 
+		</table>
+		<ul class="pagination" id="pagination"></ul>
+	</div>
+<script type="text/javascript" src="../resources/js/common/page.js"></script>
+     <script type="text/javascript">
+     getPage(${totalCount},${currPage});
+     
+    
+     
+    
+ 
+    function mainOpenPower(userId){
+   	 var iWidth =1000;
+   	 var iHeight=500;
+   	 var iTop = (window.screen.availHeight - 30 - iHeight) / 2;
+ 		var iLeft = (window.screen.availWidth - 10 - iWidth) / 2;
+ 		
+ 		var win = window.open("../SysUserInfo/sysRoleInfo.do?userId="+userId, "弹出窗口", "width=" + iWidth + ", height=" + iHeight + ",top=" + iTop + ",left=" + iLeft + ",toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no,alwaysRaised=yes,depended=yes,channelmode=yes");
+
+    }
+    
+    function mainOpenUserAdd(){
+      	 var iWidth =1000;
+      	 var iHeight=500;
+      	 var iTop = (window.screen.availHeight - 30 - iHeight) / 2;
+    		var iLeft = (window.screen.availWidth - 10 - iWidth) / 2;
+    		
+    		var win = window.open("../SysUserInfo/addSysUserInfo.do", "弹出窗口", "width=" + iWidth + ", height=" + iHeight + ",top=" + iTop + ",left=" + iLeft + ",toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no,alwaysRaised=yes,depended=yes,channelmode=yes");
+
+       }
+ 
+</script>
+
+</body>
+</html>

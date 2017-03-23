@@ -1,0 +1,27 @@
+package com.sd.farmework.mapper; 
+
+import java.util.List;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.BaseMapper; 
+
+/** 
+ * 角色权限表
+ * @author Administrator 
+ * 
+ */ 
+public interface SysRoleInfoMapper  extends BaseMapper{ 
+	/**
+	 * 查询某个用户对应的角色
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BaseInfo> queryFunction(BaseInfo obj) throws Exception;
+	/**
+	 * 修改操作权限信息
+	 * @param user
+	 * @throws Exception
+	 */
+	public void updatePower(BaseInfo obj) throws Exception;
+}

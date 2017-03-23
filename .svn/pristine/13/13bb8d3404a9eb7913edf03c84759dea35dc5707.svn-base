@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	
+	
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<title>出库单</title>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script src="../resources/weixin/js/zepto.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <script src="../resources/weixin/js/example.js"></script>
+<style type="text/css">
+    	.mytable{
+    		width: 100%;
+    		height:120px;
+    		background: #fff;
+    		border-bottom: 0.1px solid #d9d9d9;
+    		margin-top: 10px;
+    	}
+    	.item1{
+    		padding: 10px;float:left;
+    	}
+    	.item2{
+    		padding: 15px;float:right;
+    	}
+    	.item3{
+    		padding-left:10px;float:left;
+    	}
+    	.item4{
+    		padding-right:15px;float:right;
+    	}
+    	.hader{
+	    	width: 100%;
+	    	text-align: center;
+	    	background-color: #fff;
+	    	height: 40px;
+	    	font-family: 微软雅黑;
+    	}
+    	.hader span{
+	    	position: absolute;
+    		top:5px;
+    		left:45%;
+    	}
+    	#reback{
+    		position: absolute;
+    		top:5px;
+    		left:15px;
+    	}
+    	#showfind{
+    		position: absolute;
+    		top:5px;
+    		right:15px;
+    	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+			var url="../CkAdmin/queryCkInfolistForwx.do";
+			$.ajax({
+			    url:url,
+			    dataType:"json",
+			    success:function(req){
+			    	
+					for(var i=0;i<req.length;i++){
+						var ckdate="<div class='mytable'><div style='height:70%'><div class='item1'><b>出库单号：</b>"+req[i].receiptNo+"</div></div><div class='item3'>出库时间："+req[i].receiptDate+"</div><div class='item4'><a href='outwarehouse.html?ckId="+req[i].ckId+"' class='weui-btn weui-btn_mini weui-btn_primary'>详情</a></div></div>";
+						$("#content").append(ckdate);
+					}
+			    },
+			    error:function(err){
+					alert("数据异常");
+			    }
+			});
+		}
+	);
+</script>
+</head>
+
+<body>
+		  <!-- <div style="background-color: #0066FF;">
+		     
+		      <div align="center"> 
+		      <a href="findlist.html" style="color:white; font-family: 微软雅黑;float:right;vertical-align:middle;margin-top: 10px;margin-right: 10px;">新建</a>
+		      <b style="color:white; font-size: 30px;margin-left: 30px;">出库单</b></div>
+		</div> -->
+		<div class="hader"><a href="../weixin/index.html" id="reback"><img src="../resources/images/icon_back.png" style="width: 20px;margin-top:3px; height: 20px;"></a><span>出库单</span><a href="findlist.html" id="showfind"><img src="../resources/images/icon_add.png" style="width: 23px;height: 23px;"></a></div>
+		<div class="weui-search-bar" id="searchBar">
+		            <form class="weui-search-bar__form">
+		                <div class="weui-search-bar__box">
+		                    <i class="weui-icon-search"></i>
+		                    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required/>
+		                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+		                </div>
+		                <label class="weui-search-bar__label" id="searchText">
+		                    <i class="weui-icon-search"></i>
+		                    <span>搜索</span>
+		                </label>
+		            </form>
+		            <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+		  </div>
+		<div class="page__bd" style="height: 100%;">
+		  
+		  <div class="weui-tab__panel" id="content">
+	      </div>	
+	            </div>
+		
+</body>
+				<script type="text/javascript">
+				    $(function(){
+				        var $searchBar = $('#searchBar'),
+				            $searchResult = $('#searchResult'),
+				            $searchText = $('#searchText'),
+				            $searchInput = $('#searchInput'),
+				            $searchClear = $('#searchClear'),
+				            $searchCancel = $('#searchCancel');
+				
+				        function hideSearchResult(){
+				            $searchResult.hide();
+				            $searchInput.val('');
+				        }
+				        function cancelSearch(){
+				            hideSearchResult();
+				            $searchBar.removeClass('weui-search-bar_focusing');
+				            $searchText.show();
+				        }
+				
+				        $searchText.on('click', function(){
+				            $searchBar.addClass('weui-search-bar_focusing');
+				            $searchInput.focus();
+				        });
+				        $searchInput
+				            .on('blur', function () {
+				                if(!this.value.length) cancelSearch();
+				            })
+				            .on('input', function(){
+				                if(this.value.length) {
+				                    $searchResult.show();
+				                } else {
+				                    $searchResult.hide();
+				                }
+				            })
+				        ;
+				        $searchClear.on('click', function(){
+				            hideSearchResult();
+				            $searchInput.focus();
+				        });
+				        $searchCancel.on('click', function(){
+				            cancelSearch();
+				            $searchInput.blur();
+				        });
+				    });
+				</script>
+</html>

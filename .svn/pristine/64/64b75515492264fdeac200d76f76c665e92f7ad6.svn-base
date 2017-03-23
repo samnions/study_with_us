@@ -1,0 +1,92 @@
+package com.sd.farmework.service.impl;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sd.farmework.common.ApprovenUtil;
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.mapper.SysApprovenFunctionRuleMapper;
+import com.sd.farmework.mapper.SysApprovenRulePersonMapper;
+import com.sd.farmework.mapper.SysApprovenTaskMapper;
+import com.sd.farmework.mapper.SysApprovenTaskedMapper;
+import com.sd.farmework.mapper.TestApprovenFuncitonMapper;
+import com.sd.farmework.pojo.SysApprovenTask;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.pojo.TestApprovenFunciton;
+import com.sd.farmework.service.TestApprovenFuncitonService;
+/**
+ * 添加用户
+ * @author wangchaochao
+ * 2016-10-28
+ */
+@Service
+public class TestApprovenFuncitonServiceImpl   extends BaseInfoServiceImpl  implements TestApprovenFuncitonService {
+
+	private static Logger logger = Logger.getLogger(TestApprovenFuncitonServiceImpl.class);
+	@Autowired
+	private SysApprovenRulePersonMapper ruleMapper;
+	@Autowired
+	private SysApprovenTaskMapper sysApprovenTaskMapper;
+	@Autowired
+	private SysApprovenTaskedMapper sysApprovenTaskedMapper;
+	@Autowired
+	private SysApprovenFunctionRuleMapper sysApprovenFunctionRuleMapper;
+	@Autowired
+	private TestApprovenFuncitonMapper baseMapper;
+
+	public TestApprovenFuncitonMapper getBaseMapper() {
+		return baseMapper;
+	}
+
+	public void setBaseMapper(TestApprovenFuncitonMapper baseMapper) {
+		this.baseMapper = baseMapper;
+	}
+    
+	@Override
+	public Map addApproven(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) throws Exception{
+		
+			String approvenFunctionId = (String)request.getAttribute("approvenFunctionId");
+			TestApprovenFunciton obj = (TestApprovenFunciton)request.getAttribute("obj");
+			HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+			SysUserInfo sessionUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+			obj=(TestApprovenFunciton) httpSessionProvider.fillBaseInfo(obj, sessionUserInfo);
+			
+			 baseMapper.add(obj);
+			
+			 obj.setTestId(obj.getTestId());
+			 //审批开始
+			 //sys_approven_task
+			 SysApprovenTask sysTaskP =new SysApprovenTask();
+			 //任务名称
+			 sysTaskP.setTaskName(obj.getTestName()+"请假申请");
+			 //业务表名
+			 sysTaskP.setSourceTable("test_approven_funciton");
+			 //业务表主键名称
+			 sysTaskP.setSourceTablePkColumnName("test_id");
+			 //业务表主键对应值
+			 sysTaskP.setSourceTablePkColumnValue(obj.getTestId()+"");
+			 
+			 //审批工具类
+			 ApprovenUtil appr = new ApprovenUtil();
+			 //请假调休审批 0000000001 sys_approven_function_rule
+			 sysTaskP = (SysApprovenTask) httpSessionProvider.fillBaseInfo(sysTaskP, sessionUserInfo);
+			 Map map= appr.addApprovenTask(session, request, response, approvenFunctionId,sysTaskP,sysApprovenTaskMapper,ruleMapper,sysApprovenFunctionRuleMapper);
+			 if(!map.get("code").equals("000")){
+				 throw new Exception(map.get("code").toString());
+			 }
+			 return map;
+		 
+ 	}
+
+	 
+	 
+}

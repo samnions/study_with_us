@@ -1,0 +1,168 @@
+package com.sd.farmework.pojo; 
+
+import com.sd.farmework.common.BaseInfo; 
+
+/** 
+ * null
+ * @author Administrator 
+ * 
+ */ 
+public class CgOrdersInfoDetail extends BaseInfo{ 
+	//主键 
+	private String detailId; 
+	//订单编号 
+	private String orderNo; 
+	//存货编码 
+	private String stockNo; 
+	//存货名称 
+	private String stockName; 
+	//规格 
+	private String standard; 
+	//计量单位 
+	private String unit; 
+	//数量 
+	private String num; 
+	//含税单价 
+	private String taxationPrice; 
+	//单价 
+	private String price; 
+	//扣率 
+	private String discountRate; 
+	//金额 
+	private String amount; 
+	//扣税类别 
+	private String taxationType; 
+	//税率 
+	private String taxationRate; 
+	//价税合计 
+	private String sum; 
+	
+    public CgOrdersInfoDetail(){
+	}
+    public CgOrdersInfoDetail(String detailId,String orderNo,String stockNo,String stockName,String standard,String unit,String num,String taxationPrice,String price,String discountRate,String amount,String taxationType,String taxationRate,String sum,String createUserName,String createUserId,String createTime,String updateUserName,String updateUserId,String updateTime){
+		this.detailId=detailId;
+		this.orderNo=orderNo;
+		this.stockNo=stockNo;
+		this.stockName=stockName;
+		this.standard=standard;
+		this.unit=unit;
+		this.num=num;
+		this.taxationPrice=taxationPrice;
+		this.price=price;
+		this.discountRate=discountRate;
+		this.amount=amount;
+		this.taxationType=taxationType;
+		this.taxationRate=taxationRate;
+		this.sum=sum;
+		
+	}
+    public CgOrdersInfoDetail(String orderNo,String stockNo,String stockName,String standard,String unit,String num,String taxationPrice,String price,String discountRate,String amount,String taxationType,String taxationRate,String sum,String createUserName,String createUserId,String createTime,String updateUserName,String updateUserId,String updateTime){
+		this.orderNo=orderNo;
+		this.stockNo=stockNo;
+		this.stockName=stockName;
+		this.standard=standard;
+		this.unit=unit;
+		this.num=num;
+		this.taxationPrice=taxationPrice;
+		this.price=price;
+		this.discountRate=discountRate;
+		this.amount=amount;
+		this.taxationType=taxationType;
+		this.taxationRate=taxationRate;
+		this.sum=sum;
+		
+	}
+	public void setDetailId(String detailId){ 
+		this.detailId=detailId;
+	}
+	public String getDetailId(){ 
+		return this.detailId;
+	}
+	public void setOrderNo(String orderNo){ 
+		this.orderNo=orderNo;
+	}
+	public String getOrderNo(){ 
+		return this.orderNo;
+	}
+	public void setStockNo(String stockNo){ 
+		this.stockNo=stockNo;
+	}
+	public String getStockNo(){ 
+		return this.stockNo;
+	}
+	public void setStockName(String stockName){ 
+		this.stockName=stockName;
+	}
+	public String getStockName(){ 
+		return this.stockName;
+	}
+	public void setStandard(String standard){ 
+		this.standard=standard;
+	}
+	public String getStandard(){ 
+		return this.standard;
+	}
+	public void setUnit(String unit){ 
+		this.unit=unit;
+	}
+	public String getUnit(){ 
+		return this.unit;
+	}
+	public void setNum(String num){ 
+		this.num=num;
+	}
+	public String getNum(){ 
+		return this.num;
+	}
+	public void setTaxationPrice(String taxationPrice){ 
+		this.taxationPrice=taxationPrice;
+	}
+	public String getTaxationPrice(){ 
+		return this.taxationPrice;
+	}
+	public void setPrice(String price){ 
+		this.price=price;
+	}
+	public String getPrice(){ 
+		return this.price;
+	}
+	public void setDiscountRate(String discountRate){ 
+		this.discountRate=discountRate;
+	}
+	public String getDiscountRate(){ 
+		return this.discountRate;
+	}
+	public void setAmount(String amount){ 
+		this.amount=amount;
+	}
+	public String getAmount(){ 
+		return this.amount;
+	}
+	public void setTaxationType(String taxationType){ 
+		this.taxationType=taxationType;
+	}
+	public String getTaxationType(){ 
+		return this.taxationType;
+	}
+	public void setTaxationRate(String taxationRate){ 
+		this.taxationRate=taxationRate;
+	}
+	public String getTaxationRate(){ 
+		return this.taxationRate;
+	}
+	public void setSum(String sum){ 
+		this.sum=sum;
+	}
+	public String getSum(){ 
+		return this.sum;
+	}
+	@Override
+	public String toString() {
+		return "CgOrdersInfoDetail [detailId=" + detailId + ", orderNo=" + orderNo + ", stockNo=" + stockNo
+				+ ", stockName=" + stockName + ", standard=" + standard + ", unit=" + unit + ", num=" + num
+				+ ", taxationPrice=" + taxationPrice + ", price=" + price + ", discountRate=" + discountRate
+				+ ", amount=" + amount + ", taxationType=" + taxationType + ", taxationRate=" + taxationRate + ", sum="
+				+ sum + "]";
+	}
+	
+}

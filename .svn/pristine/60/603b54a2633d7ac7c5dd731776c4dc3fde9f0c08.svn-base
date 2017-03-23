@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>WeUI</title>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <script src="../resources/weixin/js/zepto.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="../resources/weixin/js/weui.min.js"></script>
+    <script src="../resources/weixin/js/example.js"></script>
+<style type="text/css">
+.img {
+	margin-top: -10px;
+	width: 30px;
+	height: 30px;
+}
+
+.floatleft div {
+	float: left;
+	width: 20%;
+	text-align: center;
+	vertical-align: center;
+}
+
+.floatleft {
+	height: 50px;
+	background-color: white;
+}
+
+.mytable {
+	width: 100%;
+	height: 120px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+
+.mytable1 {
+	width: 100%;
+	height: 150px;
+	background: #fff;
+	border-bottom: 0.1px solid #d9d9d9;
+	margin-top: 10px;
+}
+
+.item1 {
+	padding: 15px;
+	float：left;
+}
+
+.item3 {
+	float: left;
+	padding: 20px;
+	margin-top: -20px;
+	margin-left: -5px;
+}
+
+.item4 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -48px;
+	margin-left: 175px;
+}
+
+.inputs {
+	width: 55px;
+	height: 25px;
+	margin-top: -30px;
+}
+
+    	.item15{
+    		padding: 20px;float:left;
+    		margin-top: -10px;
+    	}
+    	
+    	.item16{
+    		padding-left:20px;float:left;
+    		margin-top: 10px;
+    	}
+    	
+    	.item17{
+    		padding-left:20px;float:left;
+    		margin-top: 40px;
+    	}
+    	
+    	.item18{
+    		padding-left:20px;float:left;
+    		margin-top: -30px;
+    	}
+    	
+</style>
+<title>Insert title here</title>
+</head>
+<script type="text/javascript">
+window.shareType = "3";
+orderNo = window.sessionStorage.getItem("orderNo");
+/**
+ * 提交内容
+ */
+ 
+//获取扫一扫的物资信息
+
+$(document).ready(function(){
+	 
+ $("#showIOSActionSheet").click(function(){
+	 	sessionStorage.clear();
+	    var remark =$("input[name='remark']").val();
+		var stockNo =$("#stockNo").html();
+		var stockName =$("#stockName").html();
+		var unit =$("#unit").html();
+		var afterNum =$("#afterNum").html();
+
+		if(remark==""||stockNo==null||stockName==null||unit==null||afterNum==null){
+			alert("信息还未填写完整！")
+		   }else{  
+			   
+        		var data = {
+        				remark:$("input[name='remark']").val(),
+        				inventoryPerson:$("input[name='inventoryPerson']").val(),
+        				receiptNo:$("input[name='receiptNo']").val(),
+        				
+        				stockNo:$("#stockNo").html(),
+        				stockName:$("#stockName").html(),
+        				unit : $("#unit").html(),
+        				afterNum : $("#afterNum").html(),
+        		}
+					$.ajax({
+						type : "GET",
+						url : "../Inventory/inventoryAdd.do",
+						data : data,
+						async : true,
+						dataType : "json",
+						success : function(data) {
+							alert("信息提交成功！")
+							location.href="../weixin/inventory.html"
+						},
+						error : function(rec) {
+							alert("信息提交失败！");
+						}
+					});
+		   
+        		
+		   }	
+	
+    });
+  
+    addlist();  
+    function addlist() {
+    	var array = sessionStorage.product;
+    	var json = JSON.parse(array);
+    	var proHtml="";
+    	for (var i = 0; i < json.length; i++) {
+    		var productJson = JSON.parse(json[i]);
+               proHtml+="<div class='mytable1'><div style='height:65%'><div class='item15'>存货编码：<span id='stockNo'>"+productJson.productObj.stockNo+"</span></div><div class='item16' >计量单位：<span id='unit'>"+productJson.productObj.unit+"</span></div><div class='item17' >盘点数量：<span id='afterNum'>"+productJson.productObj.pageCount+"</span></div><div class='item18' >存货名称：<span id='stockName'>"+productJson.productObj.stockName+"</span></div></div>";
+    	}
+         $("#text").empty().append(proHtml); 
+         sessionStorage.clear();
+    }
+});
+
+</script>
+<body>
+	<div class="weui-cells__title">
+		<b>新增盘点单</b>
+	</div>
+	<!-- 添加与扫一扫 -->
+	<div class="page__bd page__bd_spacing"
+		style="height: 30px; padding-top: 16px; background-color: white;">
+
+		<div class="button-sp-area">
+		    <div style="float:left ;">
+				<a href="../weixin/inventory.html"><img class="img" src="./images/back.png""
+					alt="" /></a>
+			</div>
+			
+			
+			
+			<div style="float: right;">
+				<a id="scanQRCode1"><img class="img" src="./images/scan.png" alt="" /></a>
+			</div>
+		</div>
+	</div>
+	<div class="page__bd" style="height: 100%;">
+		<div class="weui-tab">
+
+			<div class="weui-tab__panel" >
+				<div class="mytable">
+
+					<div class="item1">
+						<b>盘点单基础信息</b>
+					</div>
+                    <div class="item3">备注：<input class="inputs" name="remark"/></div>
+                    <div class="item4">盘点人：<input class="inputs" name="inventoryPerson"/></div>
+				</div>
+				
+			    <div id="text">
+		        
+		         
+			    </div> 
+	           
+			    <div class="weui-tab" style="background-color: white;">
+					<div class="button-sp-area">
+						<a id="showIOSActionSheet" class="weui-btn weui-btn_primary">保存</a>
+					</div>
+			    </div>
+	          
+		</div>
+	</div>
+    
+ </div>
+	<script type="text/javascript">
+		$(function() {
+			var $tooltips = $('.js_tooltips');
+
+			$('#showTooltips').on('click', function() {
+				if ($tooltips.css('display') != 'none')
+					return;
+
+				// toptips的fixed, 如果有`animation`, `position: fixed`不生效
+				$('.page.cell').removeClass('slideIn');
+
+				$tooltips.css('display', 'block');
+				setTimeout(function() {
+					$tooltips.css('display', 'none');
+				}, 2000);
+			});
+		});
+	</script>
+	<script src="../resources/weixin/common/shareApi.js"></script> 
+</body>
+</html>

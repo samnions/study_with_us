@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <script src="../resources/weixin/js/jquery.min.js"></script>
+    <meta http-equiv=”Expires” CONTENT=”0″>
+    <meta http-equiv=”Cache-Control” CONTENT=”no-cache”>
+    <meta http-equiv=”Pragma” CONTENT=”no-cache”>
+    <meta name="Author" content="npc-guangming">
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/weui.min.css"/>
+    <link rel="stylesheet" href="../resources/weixin/styles/example.css"/>
+    <link rel="stylesheet" type="text/css" href="../resources/weixin/styles/shopCarts.css">
+    <script type="text/javascript"src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="../resources/weixin/js/weui.min.js"></script>
+    <title>入库</title>
+    <style type="text/css">
+   		body{
+   			font-family: 微软雅黑;
+   		}
+    </style>
+    <script type="text/javascript">
+	    /* document.querySelector('#scanQRCode1').onclick = function () {
+	        wx.scanQRCode({
+	          needResult: 1,
+	          desc: 'scanQRCode desc',
+	          success: function (res) {
+	            alert(JSON.stringify(res));
+	          }
+	        });
+	      }; */
+    </script>
+</head>
+
+<body>
+
+    <div id="header">
+        <label style="font-size: 15px" id="retur"><img src="../resources/images/icon_back.png" style="width: 23px;height: 23px;margin-left: 15px;margin-top: 3px;"></label> <label style="font-size: 15px" id="scanQRCode1">扫一扫</label>
+    </div>
+    <div id="content">
+    </div>
+    <div id="footer">
+        <label><span class="weui-btn weui-btn_mini weui-btn_primary">入库</span></label>
+    </div>
+    <script>
+   		 var no ="";
+          addlist();  
+        function addlist() {
+      		no = GetQueryString("orderNo");
+      	  	var data = {"orderNo":no};
+      	  sessionStorage.orderNo=no;
+          window.shareType = "1";
+      	  $.ajax({ 
+					type : "POST",
+					data:data,
+					dataType: "json",
+					url: "../cgOrders/wePurchaseOrderDetail.do", 
+					success: function(result){
+						var listHtml=""; 
+						var f = true;
+						for (var i = 0; i < result.length; i++) {
+				              listHtml+="<ul id=litem"+i+"><div class='itemName'><label>"+result[i].name+"</label></div>";
+				             
+				              for(var k = 0; k < result[i].list1.length; k++){
+				            	  if(result[i].list1[k].orderStauts=="N"){
+				            		  f = false;
+				            	  }
+				    	          listHtml+=" <li style='height: 200px;background: white;position: relative;border-bottom: 1px solid #f2f2f2;' id=litem"+i+"-"+k+"><div class='itemMsg'><input type='hidden' id='orderStauts' value='"+result[i].list1[k].orderStauts+"'><label class='name1'>&nbsp;&nbsp;订单详情</label><label class='dingdanNo'>订单编号:<b>&nbsp;&nbsp;"+result[i].list1[k].orderNo+"</b></label><label class='partment'>采购部门:&nbsp;&nbsp;"+result[i].list1[k].purchaseTeam+"</label><label class='person'>&nbsp;&nbsp;&nbsp;采购人:&nbsp;&nbsp;"+result[i].list1[k].purchasePerson+"</label><label class='support'>&nbsp;&nbsp;&nbsp;供应商:&nbsp;&nbsp;"+result[i].list1[k].supplyShop+"</label></label><label class='times'>采购时间:&nbsp;&nbsp;"+result[i].list1[k].orderDate+"</label></div></li>"
+				    	
+				    			}
+				              for (var j = 0; j < result[i].list.length; j++) {
+				              listHtml+=" <li id=litem"+i+"-"+j+"><div class='itemMsg'><label class='name'>商品名称:"+result[i].list[j].stockName+"</label><label class='price'>价格:"+result[i].list[j].price+"</label><label class='warehour' style='font-size: 10px' id=number"+i+"-"+j+">数量:&nbsp;"+result[i].list[j].num+"</label><div class='sub_add'><span class='sub' id=sub"+i+"-"+j+" onclick='sub(this)'>-</span><input type='text' class='count' value='"+result[i].list[j].num+"' id=count"+i+"-"+j+" name='countinput' onchange='panDuan(this)'><span class='add' id=add"+i+"-"+j+" onclick='add(this)'>+</span></div></div></li>"
+				              }
+				             listHtml+="</ul>";
+				         }
+				      	 $("#content").empty().append(listHtml);
+				      	if(!f){
+							$("#footer span").hide();
+							alert("该订单正在审核中...");
+							
+						}
+				     	if(sessionStorage.productObj!=null && sessionStorage.productObj!=""){
+				      		var array = sessionStorage.productObj;
+				      		var json = JSON.parse(array);
+				        	 var listHtml="";
+				        	for (var j = 0; j < json.length; j++) {
+				        		
+				        		var productJson = JSON.parse(json[j]);
+				        		
+				        		var obj_lis = document.getElementById("litem0").getElementsByTagName("li");
+					      		 for (var i = 1; i < obj_lis.length; i++) {
+					      			var liInnerHTML = obj_lis[i].innerHTML;
+					      			var tiaoJian = liInnerHTML.indexOf(productJson.productObj.stockName);
+					      			 if(tiaoJian!=-1){
+					      				var liId = obj_lis[i].id;
+					      				//litem0-0
+					      				if(liId!=""){
+					      					var liIdsub = liId.substring(5);
+					      					
+					      					var getNum = $("#count"+liIdsub).val();
+					      					
+					      					var allCount = $("#number"+liIdsub).html();
+					      	            	allCount=allCount.substring(9);
+					      	            	if(parseInt(productJson.productObj.pageCount)>parseInt(allCount)){
+					      	            		alert("输入数量过大。");
+					      	            		$("#count"+liIdsub).val(allCount);
+					      	            	}else{
+					      	            		$("#count"+liIdsub).val(productJson.productObj.pageCount);
+					      	            	}
+					      				}
+					      			}
+								}
+							}
+				      	 }
+					
+					
+					
+					}});
+        }
+/*        $("#scanQRCode2").click(function (){
+    	  
+    	   location.href="../weixin/saoyisao.html";
+    	   
+       }); */
+            $("#footer span").click(function() {
+            	
+            	var orderStauts = $("#orderStauts").val();
+            	if(orderStauts=='N'){
+            		alert("该订单正在审核中...");
+            		return;
+            	}
+            	sessionStorage.productObj ="[]";
+            	 var obj_lis = document.getElementById("litem0").getElementsByTagName("li");
+            	var strHtml= "";
+	            if(obj_lis.length<=1){
+	            	alert("该订单中没有物资可以入库...");
+	            	return;
+	            }
+            	for(i=1;i<obj_lis.length;i++){
+                 var a = $("input[name='countinput']");
+                        if(i!=obj_lis.length-1){
+                        	 strHtml+=obj_lis[i].innerHTML+"///"+a[i-1].value+"---";
+                        }else{
+                        	strHtml+=obj_lis[i].innerHTML+"///"+a[i-1].value;
+                        }
+                       
+                } 
+            	var data ={"no":no,
+            			   "strHtml":strHtml
+            				};
+            	$.ajax({ 
+					type : "POST",
+					data:data,
+					dataType: "json",
+					url: "../RkAdmin/wxRkInfo.do", 
+					success: function(data){
+						if(data.code=="000"){
+							
+						alert("入库成功！");
+						}else{
+							alert("入库失败！："+data.msg);
+						}
+						window.location.href="../weixin/storage.html";
+					}});
+            	
+            })
+            
+             function panDuan(e){
+            	
+            	var idStr = e.id.substring(5);
+            	var allCount = $("#number"+idStr).html();
+            
+            	allCount=allCount.substring(9);
+            	//var a = e.value;
+            	if(parseInt(e.value)<0 ||isNaN(e.value)){
+            		alert("请输入正确的数据...");
+            		e.value=0;
+            	}
+            	if(parseInt(e.value)>parseInt(allCount)){
+            		alert("超出库存...");
+            		e.value=allCount;
+            	}
+            	
+            }
+            
+            $(".count").click(function() {
+                // body...
+            })
+            $("#footer span").click(function() {
+                console.log($(this).text());
+                if ($(this).text() == "结算") {
+              
+        
+
+                } else if ($(this).text() == "删除") {
+                    for (var i = 0; i < allSelId.length; i++) {
+                      
+                        if ($("#" + allSelId[i]).attr("src") == "images/pltchon.png") {
+
+                            $("#l" + allSelId[i]).hide();
+                        }
+                    }
+                }
+            })
+            
+            function sub(e) {
+            	var tid = e.id.substring(3);
+                var count = parseInt($("#count" + tid).val());
+                if (count > 0) {
+                    count--;
+                    $("#count" + tid).val(count);
+                } else {
+                	alert("已到达最小..");
+                    $("#count" + tid).val("0");
+                }
+            }
+            function add(e) {
+            	var tid = e.id.substring(3);
+            	var allCount = $("#number"+tid).html();
+               	allCount=allCount.substring(9);
+                var count = parseInt($("#count" + tid).val());
+                count++;
+               if(count<=parseInt(allCount)){
+            	   $("#count" + tid).val(count);
+               }else{
+            	   alert("超出库存..");
+            	   $("#count" + tid).val(allCount);
+               }
+            }
+            $("#header #retur").click(function (){
+            	
+            	window.location.href="../weixin/storage.html";
+            	
+            });
+            function GetQueryString(name)
+            {
+               var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+               var r = window.location.search.substr(1).match(reg);
+               if(r!=null)return  unescape(r[2]); return null;
+           }
+    </script>
+  <script src="../resources/weixin/common/shareApiRk.js"></script>
+</body>
+
+</html>

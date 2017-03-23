@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>WeUI</title>
+<link rel="stylesheet"
+	href="../resources/weixin/styles/weui.css" />
+<link rel="stylesheet"
+	href="../resources/weixin/styles/weui.min.css" />
+<link rel="stylesheet"
+	href="../resources/weixin/styles/example.css" />
+<script src="../resources/weixin/js/zepto.min.js"></script>
+<script type="text/javascript"
+	src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="../resources/weixin/js/weui.min.js"></script>
+<script src="../resources/weixin/js/example.js"></script>
+<script src="../resources/js-date/WdatePicker.js"></script>
+<style type="text/css">
+
+.mytable {
+	width: 100%;
+	height: 15%;
+	background: #fff;
+	border: 1px solid gray;
+	margin-top: 10px;
+}
+.mytable1 {
+	width: 100%;
+	height: 20%;
+	background: #fff;
+	border: 1px solid gray;
+	margin-top: 10px;
+}
+
+.item1 {
+	padding: 15px;
+	float：left;
+}
+
+.item2 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -40px;
+	margin-left: 175px;
+}
+
+.item3 {
+	float: left;
+	padding: 20px;
+	margin-top: -25px;
+	margin-left: -5px;
+}
+
+.item4 {
+	float: left;
+	margin-top: -5px;
+	margin-left: 45px;
+}
+
+.item5 {
+	padding: 15px;
+	float：left;
+}
+
+.item6 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -40px;
+	margin-left: 175px;
+}
+
+.item7 {
+	float: left;
+	padding: 20px;
+	margin-top: -20px;
+	margin-left: -5px;
+}
+
+.item8 {
+	float: left;
+	padding-left: 20px;
+	margin-top: -45px;
+	margin-left: 175px;
+}
+.item9 {
+	float: left;
+	margin-top: -10px;
+	margin-left: 10px;
+}
+.item10 {
+	float: left;
+	margin-top: -10px;
+	margin-left: 55px;
+}
+
+</style>
+<title>Insert title here</title>
+</head>
+<script type="text/javascript">
+ //取当前地址栏参数
+function GetQueryString(name)
+  {
+     var r = window.location.search.substr(1);
+     var str = r.split("=");
+ }
+ 
+$(document).ready(function(){
+	 var r = window.location.search.substr(1);
+     var str = r.split("=");
+     var taskId="";
+ 	 var taskName="";
+ 	 var approvenRemark="";
+     var data={
+ 			taskId:str[1]
+ 		 };
+     //获取任务
+     $.ajax({
+			        type : "GET",
+					dataType : "json",
+					url : "../rkApprove/wxapproven.do",
+					data:data,
+					success : function(msc) {
+							 taskId=msc.sysApprovenTask.taskId;
+							taskName=msc.sysApprovenTask.taskName;
+							approvenSendTime=msc.sysApprovenTask.approvenSendTime;
+							$("#taskName").val(taskName);
+					},
+					error : function(rec) {
+						console.info("网络异常,请稍后再试");
+					}
+				});	
+    //点击保存触发的事件
+	$("#sub").click(function (){
+		//取选中的值（状态）
+	//var s=$("input[name='radio1']:checked")[0].alt;
+           var data1={
+        		taskId:str[1],
+        		approvenResult:$("#approvenResult").val(),
+       	        approvenRemark:$("#approvenRemark").val()
+        		 };
+  				
+			 $.ajax({
+				type : "GET",
+				url : "../rkApprove/wxsaveApproven.do",
+				data : data1,
+				async : true,
+				success : function(msg) {
+			
+						window.location="../weixin/waitTask.html?id=rk";
+
+				},
+				error : function(rec) {
+					console.info("网络异常,请稍后再试");
+				}
+			}); 
+
+          }); 
+
+		function returnD(){
+				window.location="../weixin/waitTask.html?id=rk";
+       }
+       
+});
+</script>
+<body>
+<div class="weui-cells__title" >	
+	<b style="margin-left:45%;">审核</b></div>
+	<div class="page__bd" style="height: 100%;">
+		<div class="weui-tab">
+		 <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">任务名称：</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="taskName" type="text" value="${taskName}" name="taskName" placeholder="请输入审核人姓名"/>
+                </div>
+            </div>
+
+             <div class="weui-cell">
+                <div class="weui-cell__hd"><label for="" class="weui-label">审批意见:</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="approvenRemark" name="approvenRemark"   placeholder="请输入备注信息"/>
+                </div>
+            </div>
+        </div> 
+        <div class="weui-cells weui-cells_form">
+               <div class="weui-cells__title">是否通过：
+						<select id="approvenResult" name="approvenResult" class="">
+							<option value="1" >通过</option>
+							<option value="2">不通过</option>
+						</select>
+					</div>
+        <div class="weui-cells weui-cells_radio">
+           <!--  <label class="weui-cell weui-check__label" for="x11" >
+                <div class="weui-cell__bd" >
+                    <p >不通过</p>
+                </div>
+                <div class="weui-cell__ft">
+                    <input type="radio" class="weui-check" name="radio1" id="x11" alt="1">
+                    <span class="weui-icon-checked"></span>
+                </div>
+            </label>
+            <label class="weui-cell weui-check__label" for="x12" >
+
+                <div class="weui-cell__bd">
+                    <p>通过</p>
+                </div>
+                <div class="weui-cell__ft">
+                    <input type="radio" name="radio1" class="weui-check" id="x12" checked="checked" alt="2">
+                    <span class="weui-icon-checked"></span>
+                </div>
+            </label>
+             -->
+          
+            
+            <div class="page__bd page__bd_spacing">
+            <div class="button-sp-area">
+            <a id="sub"  class="weui-btn weui-btn_mini weui-btn_primary">保存</a>
+            <a onclick="returnD()" class="weui-btn weui-btn_mini weui-btn_primary">返回</a>
+        </div>
+    </div>
+        </div>
+            
+         
+           
+        
+        </div>
+
+	
+		</div>
+	</div>
+	
+</body>
+</html>

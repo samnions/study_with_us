@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sd.farmework.mapper.CkOrdersMapper">
+	<resultMap type="com.sd.farmework.pojo.CkOrdersInfo" id="CkOrdersMap">
+		<result column="CK_ID" property="ckId"/>
+		<result column="RECEIPT_NO" property="receiptNo"/>
+		<result column="RECEIPT_DATE" property="receiptDate"/>
+		<result column="WAREHOUSE" property="warehouse"/>
+		<result column="STOCK_TEAM" property="stockTeam"/>
+		<result column="BUSINESS_PROCESS" property="businessProcess"/>
+		<result column="DISPATCHER_TYPE" property="dispatcherType"/>
+		<result column="STOCK_MANAGER" property="stockManager"/>
+		<result column="CG_TEAM" property="cgTeam"/>
+		<result column="PURCHASE_PERSON" property="purchasePerson"/>
+		<result column="SUPPLY_SHOP" property="supplyShop"/>
+		<result column="REMARK" property="remark"/>
+		<result column="STATUS" property="status"/>
+		<result column="IS_TK" property="isTk"/>
+		<result column="CREATE_CARD" property="createCard"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="SIGN_PERSON" property="signPerson"/>
+		<result column="SIGN_TIME" property="signTime"/>
+		<result column="APPROVEN_PERSON" property="approvenPerson"/>
+		<result column="APPROVEN_TIME" property="approvenTime"/>
+		<result column="MAX_STOCK" property="maxStock"/>
+		<result column="MIN_STOCK" property="minStock"/>
+		<result column="SECURITY_STOCK" property="securityStock"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="LAST_UPDATE_USER_NAME" property="lastUpdateUserName"/>
+		<result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+		<result column="PRINT_NUM" property="printNum"/>
+		<result column="UPLOAD_STATUS" property="uploadStatus"/>
+		<result column="CK_RECEIPT_NO" property="ckReceiptNo"/>
+		
+		<!-- 系统公共属性 必须按照规定存取数据start -->
+
+		<result column="CREATE_USER_ID" property="createUserId"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="CREATE_TEAM_ID" property="createTeamId"/>
+		<result column="CREATE_TEAM_NAME" property="createTeamName"/>
+		<result column="CREATE_DEPART_ID" property="createDepartId"/>
+		<result column="CREATE_DEPART_NAME" property="createDepartName"/>
+		<result column="CREATE_UNIT_ID" property="createUnitId"/>
+		<result column="CREATE_UNIT_Name" property="createUnitName"/>
+	</resultMap>
+	<!-- 详情表 -->
+	<resultMap type="com.sd.farmework.pojo.CkOrdersInfoDetail" id="CkOrdersDetailMap">
+		<result column="DETAIL_ID" property="detailId"/>
+		<result column="Ck_ID" property="ckId"/>
+		<result column="STOCK_NO" property="stockNo"/>
+		<result column="STOCK_NAME" property="stockName"/>
+		<result column="STANDARD" property="standard"/>
+		<result column="D_MODEL" property="dModel"/>
+		<result column="UNIT" property="unit"/>
+		<result column="SHOULD_SENT_NUM" property="shouldSentNum"/>
+		<result column="REAL_NUM" property="realNum"/>
+		<result column="PRICE" property="price"/>
+		<result column="AMOUNT" property="amount"/>
+		<result column="STORAGE_DATE" property="storageDate"/>
+		<result column="IS_GIFTS" property="isGifts"/>
+		<result column="REMARK" property="remark"/>
+		<result column="CREATE_USER_NAME" property="createUserName"/>
+		<result column="CREATE_USER_ID" property="createUserId"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_USER_NAME" property="updateUserName"/>
+		<result column="UPDATE_USER_ID" property="updateUserId"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		
+	</resultMap>
+	
+	<!-- 查询出库审核的数量-->
+	<select id="queryCkShenHeCount" parameterType="com.sd.farmework.pojo.CkOrdersInfo"
+		resultType="java.lang.Integer">
+		    select count(*)  from ck_orders_info where 1=1 
+		    <if test="receiptNo!= null and receiptNo != ''">
+				AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''">
+				AND RECEIPT_DATE like '%'||#{receiptDate}||'%'
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''">
+				AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if> 
+		    and STATUS = #{status}
+	</select>
+	<!-- 查询出库审核后的数量-->
+	<select id="queryCkShenHeCounted" parameterType="com.sd.farmework.pojo.CkOrdersInfo"
+		resultType="java.lang.Integer">
+		    select count(*)  from ck_orders_info where 1=1 
+		    <if test="receiptNo!= null and receiptNo != ''">
+				AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''">
+				AND RECEIPT_DATE like '%'||#{receiptDate}||'%'
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''">
+				AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if> 
+		    and (STATUS= #{status} or STATUS=#{status1})
+	</select>
+	
+	<!-- 查询出库审核 -->
+	<select id="queryCkShenHe" parameterType="com.sd.farmework.pojo.CkOrdersInfo"
+		resultMap="CkOrdersMap">
+		   	
+		  
+		    select RW, x.* from(
+		    select ROWNUM as RW, t.*  from ck_orders_info t where 1=1 
+		    and t.STATUS= #{status}
+		   
+		     <if test="receiptNo!= null and receiptNo != ''">
+				AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''">
+				AND RECEIPT_DATE like '%'||#{receiptDate}||'%'
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''">
+				AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if> 
+		    ) x where RW BETWEEN #{index} and #{maxPage} 
+	
+			
+	</select>
+	<select id="queryCkShenHeed" parameterType="com.sd.farmework.pojo.CkOrdersInfo"
+		resultMap="CkOrdersMap">
+		   
+		    select RW, x.* from(
+		    select ROWNUM as RW, t.*  from ck_orders_info t where 1=1 
+		     <if test="receiptNo!= null and receiptNo != ''">
+				AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''">
+				AND RECEIPT_DATE like '%'||#{receiptDate}||'%'
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''">
+				AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if> 
+			and (t.STATUS= #{status} or t.STATUS=#{status1})
+		    ) x where RW BETWEEN #{index} and #{maxPage} 
+	
+			
+	</select>
+	
+	<!-- 查询微信未审核出库的所有信息 -->
+	<select id="wxckqueryList"  parameterType="com.sd.farmework.pojo.CkOrdersInfo"  resultMap="CkOrdersMap">
+		  
+		    select * from ck_orders_info where 1=1 and status=#{status} and CREATE_USER_ID = #{createUserId} ORDER BY CREATE_TIME DESC
+		
+	</select>
+	
+	
+	<!-- 查询出库的所有信息 -->
+	<select id="queryList"  parameterType="com.sd.farmework.pojo.CkOrdersInfo"  resultMap="CkOrdersMap">
+		   
+		    select * from
+		    (select ROWNUM as id,t.* from (select * from ck_orders_info order by create_time DESC)t where CREATE_USER_ID = #{createUserId}
+		    <if test="receiptNo!= null and receiptNo != ''"> 
+			   AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''"> 
+			   AND RECEIPT_DATE like '%'||#{receiptDate}||'%' 
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''"> 
+			   AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if>
+			<if test="status!= null and status != ''"> 
+			   AND STATUS like '%'||#{status}||'%'
+			</if>
+			   AND ROWNUM &lt;=(#{startRecod}+#{pageSize})) where id &gt;= (#{startRecod}+1)
+	</select>
+	<!-- 查询出库信息的行数 -->
+	<select id="queryCount"  parameterType="com.sd.farmework.pojo.CkOrdersInfo" resultType="Integer">
+		    select count(*) from ck_orders_info where CREATE_USER_ID = #{createUserId}
+		    <if test="receiptNo!= null and receiptNo != ''"> 
+			   AND RECEIPT_NO like '%'||#{receiptNo}||'%'
+			</if>
+			<if test="receiptDate!= null and receiptDate != ''"> 
+			   AND RECEIPT_DATE like '%'||#{receiptDate}||'%' 
+			</if>
+			<if test="purchasePerson!= null and purchasePerson != ''"> 
+			   AND PURCHASE_PERSON like '%'||#{purchasePerson}||'%'
+			</if>
+			<if test="status!= null and status != ''"> 
+			   AND STATUS like '%'||#{status}||'%'
+			</if>
+	</select>
+	<!-- 根据id查出出库信息的详情 -->
+	<select id="queryById" parameterType="com.sd.farmework.pojo.CkOrdersInfo"  resultMap="CkOrdersMap">
+		select * from ck_orders_info where CK_ID=#{ckId}
+	</select>
+	<!-- 查子表的详细物资信息 -->
+	<select id="queryCKDetailList"  parameterType="com.sd.farmework.pojo.CkOrdersInfo"  resultMap="CkOrdersDetailMap">
+		<![CDATA[
+		    select * from
+		    (select ROWNUM as id,ck_orders_info_detail.* from ck_orders_info_detail where CK_ID=#{ckId} and  ROWNUM <=(#{startRecod}+#{pageSize})) where id >= (#{startRecod}+1) 
+		]]>
+	</select>
+	<!-- 查子表的物资信息行数 -->
+	<select id="queryCKDetailcount"  parameterType="com.sd.farmework.pojo.CkOrdersInfo" resultType="Integer">
+		    select count(*) from ck_orders_info_detail where CK_ID=#{ckId}
+	</select>
+	
+	<!-- 修改状态 -->
+	<update id="update" parameterType="com.sd.farmework.pojo.CkOrdersInfo">
+		UPDATE ck_orders_info SET
+		<if test="approvenPerson!= null and approvenPerson != ''"> 
+			   APPROVEN_PERSON=#{approvenPerson},
+		</if>
+		<if test="approvenTime!= null and approvenTime != ''"> 
+			  APPROVEN_TIME=sysdate,
+		</if>
+		<if test="status!= null and status != ''"> 
+			  STATUS=#{status},
+		</if>
+		<if test="createUserId!= null and createUserId != ''"> 
+			  CREATE_USER_ID=#{createUserId},
+		</if>
+		LAST_UPDATE_TIME=sysdate
+		WHERE
+		Ck_ID=#{ckId}
+	</update>
+	<insert id="add" parameterType="com.sd.farmework.pojo.CkOrdersInfoDetail">
+		insert into ck_orders_info_detail(CK_ID,
+	      STOCK_NO,
+	      STOCK_NAME,
+	      STANDARD,
+	      D_MODEL,
+	      UNIT,
+	      SHOULD_SENT_NUM,
+	      REAL_NUM,
+	      PRICE,
+	      AMOUNT,
+	      STORAGE_DATE,
+	      IS_GIFTS,
+	      REMARK,
+	      CREATE_USER_NAME,
+	      CREATE_USER_ID,
+	      CREATE_TIME,
+	      UPDATE_USER_NAME,
+	      UPDATE_USER_ID,
+	      UPDATE_TIME,
+	      DETAIL_ID
+      )values(
+		#{ckId,jdbcType=VARCHAR},
+		#{stockNo,jdbcType=VARCHAR},
+		#{stockName,jdbcType=VARCHAR},
+		#{standard,jdbcType=VARCHAR},
+		#{dModel,jdbcType=VARCHAR},
+		#{unit,jdbcType=VARCHAR},
+		#{shouldSentNum,jdbcType=VARCHAR},
+		#{realNum,jdbcType=VARCHAR},
+		#{price,jdbcType=VARCHAR},
+		#{amount,jdbcType=VARCHAR},
+		#{storageDate,jdbcType=VARCHAR},
+		#{isGifts,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{createUserName,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		sysdate,
+		#{updateUserName,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR},
+		sysdate,
+		ck_orders_info_detail_seq.nextval
+      )
+	</insert>
+	<select id="queryseq" resultType="java.lang.String">
+		select
+		CK_ORDERS_INFO_SEQ.currval from dual
+	</select>
+	<update id="setstatus" parameterType="com.sd.farmework.pojo.CkOrdersInfo">
+		UPDATE CK_ORDERS_INFO SET STATUS='0',CK_RECEIPT_NO=#{ckReceiptNo} WHERE CK_ID = #{ckId}
+	</update>
+	<!-- 出库审核通过时，查询该出库订单下的物资信息 -->
+	<select id="queryCKDetailListByCkId"  parameterType="com.sd.farmework.pojo.CkOrdersInfo"  resultMap="CkOrdersDetailMap">
+		select * from ck_orders_info_detail where Ck_ID =#{ckId}
+	</select>
+
+	<!-- 通过出库单据号修改 出库单的上传状态 -->
+	<update id="updateByRecNo" parameterType="com.sd.farmework.pojo.CkOrdersInfo">
+		UPDATE CK_ORDERS_INFO set UPLOAD_STATUS ='Y'
+		where CK_RECEIPT_NO =#{ckReceiptNo}
+	</update>
+	<!-- 通过出库单据号查询出库信息 -->
+	<select id="qureyInfoByReNo" parameterType="com.sd.farmework.pojo.CkOrdersInfo"
+		resultMap="CkOrdersMap">
+
+		select * from CK_ORDERS_INFO where 1=1 and CK_RECEIPT_NO=#{ckReceiptNo}
+
+	</select>
+</mapper>

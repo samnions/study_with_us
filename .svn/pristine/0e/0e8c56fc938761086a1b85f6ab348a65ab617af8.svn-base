@@ -1,0 +1,33 @@
+package com.sd.farmework.mapper;
+
+import java.util.List;
+
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.BaseMapper;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfo;
+
+/**
+ * 入库管理
+ * 
+ * @author 秦波
+ * @date:2017年1月5日 下午3:20:50
+ */
+public interface CkOrdersMapper extends BaseMapper {
+	public List<BaseInfo> queryCKDetailList(BaseInfo obj);
+
+	public String queryseq();
+
+	public void setstatus(BaseInfo obj);
+
+	List<CkOrdersInfo> wxckqueryList(CkOrdersInfo obj);
+
+	List<CkOrdersInfo> queryCkShenHe(BaseInfo obj);
+
+	Integer queryCkShenHeCount(BaseInfo obj);
+
+	Integer queryCkShenHeCounted(BaseInfo obj);
+
+	List<CkOrdersInfo> queryCkShenHeed(BaseInfo obj);
+}

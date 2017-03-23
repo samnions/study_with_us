@@ -1,0 +1,401 @@
+package com.sd.farmework.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sd.farmework.common.ApprovenUtil;
+import com.sd.farmework.common.BaseInfo;
+import com.sd.farmework.common.HttpSessionProvider;
+import com.sd.farmework.pojo.CkOrdersInfo;
+import com.sd.farmework.pojo.PdOrdersInfo;
+import com.sd.farmework.pojo.RkOrdersInfo;
+import com.sd.farmework.pojo.SysApprovenTask;
+import com.sd.farmework.pojo.SysUserInfo;
+import com.sd.farmework.pojo.TestApprovenFunciton;
+import com.sd.farmework.service.CgOrdersInfoService;
+import com.sd.farmework.service.CkOrdersService;
+import com.sd.farmework.service.PdOrdersInfoService;
+import com.sd.farmework.service.RkOrdersService;
+import com.sd.farmework.service.SysApprovenFunctionRuleService;
+import com.sd.farmework.service.SysApprovenRulePersonService;
+import com.sd.farmework.service.SysApprovenTaskService;
+import com.sd.farmework.service.SysApprovenTaskedService;
+
+/**
+ * 用户登录
+ * 
+ * @author 李真
+ * @date:2017年1月5日 下午3:30:54
+ * 
+ */
+
+@Controller
+@Scope("prototype")
+@RequestMapping(value = "/ckApprove")
+public class CkApprovenController {
+	private static Logger logger = Logger
+			.getLogger(CkApprovenController.class);
+
+	@Autowired
+	private CkOrdersService ckOrdersService;
+	@Autowired
+	private RkOrdersService rkOrdersService;
+	@Autowired
+	private PdOrdersInfoService pdOrdersInfoService;
+	@Autowired
+	private CgOrdersInfoService cgOrdersInfoService;
+	
+	@Autowired
+	private SysApprovenRulePersonService ruleServices;
+	@Autowired
+	private SysApprovenTaskService sysApprovenTaskService;
+	@Autowired
+	private SysApprovenTaskedService sysApprovenTaskedService;
+	@Autowired
+	private SysApprovenFunctionRuleService sysApprovenFunctionRuleService;
+    //出库
+	 private  String approvenFunctionId = "00001";
+	
+	
+	
+	/**
+	 * pc端的审核操作
+	 */
+	@RequestMapping(value = "/approval", method = RequestMethod.GET)
+	public String approval(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo,HttpServletRequest request) {
+        try {
+        	if("2".equals(flag)){//chuku
+        		ckOrdersInfo=(CkOrdersInfo) this.ckOrdersService.queryById(ckOrdersInfo);
+       		 model.addAttribute("obj",ckOrdersInfo );
+       		 model.addAttribute("flag","2");
+        	}
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "approve/TestApproven";
+	}
+	
+	/**
+	 * 审核操作
+	 */
+	@RequestMapping(value = "/approvalsubmit", method = RequestMethod.POST)
+	public String approvalsubmit(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo) {
+       try {
+    	    if("2".equals(flag)){
+    		   if("1".equals(ckOrdersInfo.getStatus())){
+    		       this.ckOrdersService.update(ckOrdersInfo);
+    		   }else if("2".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    		   }
+    	   }
+		
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+        if("2".equals(flag)){
+		   return "redirect:/CkAdmin/queryCkInfolist.do?tag=1&status=0";  
+	   }else{
+		   return null;
+	   }
+      
+	
+	}
+	/**
+	 *  微信端审核功能
+	 * @param model
+	 * @param flag
+	 * @param ckOrdersInfo
+	 * @param pdOrdersInfo
+	 * @param rkOrdersInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/wxApprovalsubmit")
+	public void wxApprovalsubmit(Model model,String flag,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo,HttpServletResponse response) {
+       try {
+  
+    		 if("2".equals(flag)){
+    		   if("1".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    			   response.getWriter().write("f");
+    			  
+    		   }else if("2".equals(ckOrdersInfo.getStatus())){
+    			   this.ckOrdersService.update(ckOrdersInfo);
+    			   response.getWriter().write("t");
+    		   }
+    		  
+    	   }
+    	  
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} 
+       
+	}
+	
+
+	/**
+	 * 	微信端的审核操作
+	 */
+	@RequestMapping(value = "/Wxapproval", method = RequestMethod.GET)
+	public String Wxapproval(Model model,CkOrdersInfo ckOrdersInfo,PdOrdersInfo pdOrdersInfo,RkOrdersInfo rkOrdersInfo) {
+         return "redirect:/RkAdmin/queryRkInfolist.do?tag=3";
+	
+	}
+	
+	
+	/**
+	 * 4、待审批列表
+	 * @param obj
+	 * @param model
+	 * @return waitingTestApprovenFunctionList.do?approvenUserId=0000000004
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/waitingApprovenList", method = RequestMethod.GET)
+	public String waitingApprovenList(HttpSession session,HttpServletRequest request,HttpServletResponse response,SysApprovenTask obj,Model model) throws Exception{
+		//通过审批人编号查询当前审批人的待办事项
+		// approvenUserId  =0000000004   系统当前登录用户sesssion获取
+		//
+		 HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		 SysUserInfo sysUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		 
+ 		String  approvenUserId=sysUserInfo.getUserId(); 
+ 		
+		obj.setApprovenUserId(approvenUserId);
+		obj.setApprovenFunctionId(approvenFunctionId);
+		obj.setApprovenTeamId(sysUserInfo.getTeamId());
+		obj.setApprovenTeamName(sysUserInfo.getTeamName());
+		obj.setApprovenDepartId(sysUserInfo.getDepartId());
+		obj.setApprovenDepartName(sysUserInfo.getDepartName());
+		obj.setApprovenUnitId(sysUserInfo.getUnitId());
+		obj.setApprovenUnitName(sysUserInfo.getUnitName());
+		
+		List<BaseInfo> list=sysApprovenTaskService.queryListByPage(obj);
+		
+		
+		obj.setTotalCount(sysApprovenTaskedService.queryCount(obj));
+		model.addAttribute("currPage",sysUserInfo.getCurrPage());
+		model.addAttribute("pageSize", sysUserInfo.getPageSize());
+		model.addAttribute("totalCount",obj.getPageCount());
+		
+		model.addAttribute("testList", list);
+		return "approve/waitingCKApprovenList";
+	}
+	/**
+	 * 4、查询业务信息
+	 * @param employee
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/approven", method = RequestMethod.GET)
+	public String approven(TestApprovenFunciton obj,Model model,String taskId) throws Exception{
+		
+		SysApprovenTask sysApprovenTask=(SysApprovenTask) sysApprovenTaskService.queryByPkId(taskId);
+		model.addAttribute("sysApprovenTask", sysApprovenTask);
+		return "approve/ckApproven1";
+	}
+	/**
+	 * 5、执行审批操作
+	 * @param obj
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/saveApproven", method = RequestMethod.GET)
+	public String saveApproven(HttpSession session,HttpServletRequest request, HttpServletResponse response,SysApprovenTask obj,Model model) throws Exception{
+		//审批功能编号
+	
+		ApprovenUtil appr = new ApprovenUtil();
+		Map <String,Object> map =appr.doApproven(session, request, response, obj, sysApprovenTaskService,sysApprovenTaskedService,approvenFunctionId);
+		 
+		List<BaseInfo> sysApprovenTaskList=(List<BaseInfo>) map.get("sysApprovenTaskList");
+		
+		
+		//审核通过
+		CkOrdersInfo objP =new CkOrdersInfo();
+		objP.setCkId(map.get("sourceId").toString());
+		
+		//审核不通过
+		if("2".equals(obj.getApprovenResult())){
+			 objP.setStatus("1");
+			 
+			 ckOrdersService.update(objP);
+			 for(int i=0;i<sysApprovenTaskList.size();i++){
+				 sysApprovenTaskService.delete(sysApprovenTaskList.get(i));
+			 }
+		 }else{
+			 if(sysApprovenTaskList==null||sysApprovenTaskList.size()==0){
+				 objP.setStatus("2");
+				 
+				 ckOrdersService.update(objP);
+					
+					//写发送短信或者其他业务操作
+					
+				}
+		 }
+			
+		 return waitingApprovenList(session,request, response, obj, model);
+	}
+	
+	/**
+	 * 6、已审批列表
+	 * @param obj
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/waitedApprovenList", method = RequestMethod.GET)
+	public String waitedTestApprovenFunctionList(HttpSession session,HttpServletRequest request,HttpServletResponse response,SysApprovenTask obj,Model model) throws Exception{
+		//通过审批人编号查询当前审批人的待办事项
+		//通过审批人编号查询当前审批人的待办事项
+		// approvenUserId  =0000000004   系统当前登录用户sesssion获取
+		 HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		 SysUserInfo sysUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		 
+		String  approvenUserId=sysUserInfo.getUserId(); 
+		obj.setApprovenUserId(approvenUserId);
+		
+		obj.setApprovenFunctionId(approvenFunctionId);
+		
+		
+		List<BaseInfo> list=sysApprovenTaskedService.queryListByPage(obj);
+		obj.setTotalCount(sysApprovenTaskedService.queryCount(obj));
+		
+		model.addAttribute("currPage",sysUserInfo.getCurrPage());
+		model.addAttribute("totalCount", obj.getPageCount());
+		model.addAttribute("testList", list);
+		return "approve/waitedCKApprovenList";
+	}
+	/**
+	 * 7、查看当前审批任务进度
+	 * @param obj
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/dataApprovenDetailList", method = RequestMethod.GET)
+	public String dataApprovenDetailList(SysApprovenTask obj,Model model) throws Exception{
+		//通过审批人编号查询当前审批人的待办事项
+		
+		
+ 		obj.setApprovenFunctionId(approvenFunctionId);
+		List<BaseInfo> list=sysApprovenTaskService.queryAllApprovenTaskList(obj);
+		
+		model.addAttribute("testList", list);
+		return "approve/dataApprovenDetailList";
+	}
+	
+	
+	
+	/**
+	 * 4、微信待审批列表
+	 * @param obj
+	 * @param model
+	 * @return waitingTestApprovenFunctionList.do?approvenUserId=0000000004
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/wxwaitingApprovenList", method = RequestMethod.GET)
+	public Object wxwaitingApprovenList(HttpSession session,HttpServletRequest request,HttpServletResponse response,SysApprovenTask obj,Model model) throws Exception{
+		Map map=new HashMap();
+		//通过审批人编号查询当前审批人的待办事项
+		// approvenUserId  =0000000004   系统当前登录用户sesssion获取
+		 HttpSessionProvider httpSessionProvider =new HttpSessionProvider();
+		 SysUserInfo sysUserInfo=httpSessionProvider.getCurrentUserSession(session, request, response);
+		 
+ 		String  approvenUserId=sysUserInfo.getUserId(); 
+ 		
+		obj.setApprovenUserId(approvenUserId);
+		obj.setApprovenFunctionId(approvenFunctionId);
+		obj.setApprovenTeamId(sysUserInfo.getTeamId());
+		obj.setApprovenTeamName(sysUserInfo.getTeamName());
+		obj.setApprovenDepartId(sysUserInfo.getDepartId());
+		obj.setApprovenDepartName(sysUserInfo.getDepartName());
+		obj.setApprovenUnitId(sysUserInfo.getUnitId());
+		obj.setApprovenUnitName(sysUserInfo.getUnitName());
+		
+		
+		
+		List<BaseInfo> list=sysApprovenTaskService.queryList(obj);
+		/*model.addAttribute("currPage",sysUserInfo.getCurrPage());
+		model.addAttribute("pageSize", sysUserInfo.getPageSize());
+		model.addAttribute("totalCount", sysApprovenTaskedService.queryCount(obj));*/
+		
+		model.addAttribute("testList", list);
+		map.put("testList", list);
+		return map;
+	}
+	/**
+	 * 4、查询微信业务信息
+	 * @param employee
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/wxapproven", method = RequestMethod.GET)
+	public Object wxapproven(TestApprovenFunciton obj,Model model,String taskId) throws Exception{
+		Map map=new HashMap();
+		SysApprovenTask sysApprovenTask=(SysApprovenTask) sysApprovenTaskService.queryByPkId(taskId);
+		model.addAttribute("sysApprovenTask", sysApprovenTask);
+		map.put("sysApprovenTask", sysApprovenTask);
+		return map;
+	}
+	/**
+	 * 5、执行微信审批操作
+	 * @param obj
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/wxsaveApproven", method = RequestMethod.GET)
+	public Object wxsaveApproven(HttpSession session,HttpServletRequest request, HttpServletResponse response,SysApprovenTask obj,Model model) throws Exception{
+		//审批功能编号
+		ApprovenUtil appr = new ApprovenUtil();
+		Map <String,Object> map =appr.doApproven(session, request, response, obj, sysApprovenTaskService,sysApprovenTaskedService,approvenFunctionId);
+		List<BaseInfo> sysApprovenTaskList=(List<BaseInfo>) map.get("sysApprovenTaskList");
+		//审核通过
+		RkOrdersInfo objP =new RkOrdersInfo();
+		objP.setRkId(map.get("sourceId").toString());
+		//审核不通过
+		if("2".equals(obj.getApprovenResult())){
+			 objP.setStatus("1");
+			 rkOrdersService.update(objP);
+			 for(int i=0;i<sysApprovenTaskList.size();i++){
+				 sysApprovenTaskService.delete(sysApprovenTaskList.get(i));
+			 }
+		 }else{
+			 if(sysApprovenTaskList==null||sysApprovenTaskList.size()==0){
+				 objP.setStatus("2");
+				 rkOrdersService.update(objP);
+					//写发送短信或者其他业务操作
+				}
+		 }
+			
+		 return wxwaitingApprovenList(session,request, response, obj, model);
+	}
+	
+	
+
+	
+	
+	
+	
+
+}
